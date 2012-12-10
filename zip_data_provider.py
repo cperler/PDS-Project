@@ -48,6 +48,7 @@ class ZipcodeProvider:
 		try:
 			url = ZIPTASTIC_API.format(zipcode)
 			page = get_page(url)
-			return json.loads(page)['city']
+			json_from_page = json.loads(page)
+			return (json_from_page['city'], json_from_page['state'])
 		except urllib2.HTTPError:
 			return 'Unable to locate city for zipcode {}.'.format(zipcode)

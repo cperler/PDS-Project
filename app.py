@@ -8,40 +8,39 @@ from datetime import datetime
 DEBUG = False
 start_date = date(2011,1,1)
 end_date = date(2011,12,31)
-city = 'White Plains'
-state = 'NY'
+zipcode = 10538
 
 trulia = TruliaDataProvider(TRULIA_KEY)
-zips = ZipcodeProvider(trulia).get_zipcodes_for_city(city, state)
+city, state = ZipcodeProvider(trulia).get_city_for_zipcode(zipcode)
 
 dates = []
 keys = []
 dates_for_keys = {}
 data = {}
-for zip in zips:
-	trulia_data = trulia.get_trulia_data_for_date_range_and_city(start_date, end_date, city, state)	
-	for listing_stat in trulia_data.findall('./response/TruliaStats/listingStats/listingStat'):
-		weekEndingDate = listing_stat.find('weekEndingDate').text
-		if weekEndingDate not in dates:
-			dates.append(datetime.strptime(weekEndingDate, '%Y-%m-%d'))
-		for subcategory in listing_stat.findall('./listingPrice/subcategory'):
-			type = subcategory.find('type').text			
+
+trulia_data = trulia.get_trulia_data_for_date_range_and_zipcode(start_date, end_date, zipcode)
+for listing_stat in trulia_data.findall('./response/TruliaStats/listingStats/listingStat'):
+	weekEndingDate = listing_stat.find('weekEndingDate').text
+	if weekEndingDate not in dates:
+		dates.append(datetime.strptime(weekEndingDate, '%Y-%m-%d'))
+	for subcategory in listing_stat.findall('./listingPrice/subcategory'):
+		type = subcategory.find('type').text			
+		
+		if type not in dates_for_keys:
+			dates_for_keys[type] = []
+		if weekEndingDate not in dates_for_keys[type]:
+			dates_for_keys[type].append(weekEndingDate)
+		
+		numProperties = subcategory.find('numberOfProperties').text
+		medianListing = subcategory.find('medianListingPrice').text
+		avgListing = subcategory.find('averageListingPrice').text
+		datapoint = (numProperties, medianListing, avgListing)				
+		if type not in keys:
+			keys.append(type)
 			
-			if type not in dates_for_keys:
-				dates_for_keys[type] = []
-			if weekEndingDate not in dates_for_keys[type]:
-				dates_for_keys[type].append(weekEndingDate)
-			
-			numProperties = subcategory.find('numberOfProperties').text
-			medianListing = subcategory.find('medianListingPrice').text
-			avgListing = subcategory.find('averageListingPrice').text
-			datapoint = (numProperties, medianListing, avgListing)				
-			if type not in keys:
-				keys.append(type)
-				
-			if type not in data:
-				data[type] = []
-			data[type].append(datapoint)
+		if type not in data:
+			data[type] = []
+		data[type].append(datapoint)
 
 if DEBUG:
 	pp = pprint.PrettyPrinter(indent=4)
@@ -67,7 +66,7 @@ def plotNumProperties():
 	if len(dates) < 10:
 		graph.set_xticks(xdates)
 		graph.set_xticklabels([dt.strftime('%Y-%m-%d') for dt in dates])
-	plt.title('# Properties Listed for {}, {} from {} to {}'.format(city, state, start_date, end_date))
+	plt.title('# Properties Listed for {}, {} {} from {} to {}'.format(city, state, zipcode, start_date, end_date))
 	plt.show()
 
 def plotMedianListings():
@@ -88,7 +87,7 @@ def plotMedianListings():
 	if len(dates) < 10:
 		graph.set_xticks(xdates)
 		graph.set_xticklabels([dt.strftime('%Y-%m-%d') for dt in dates])
-	plt.title('Median Listing Prices for {}, {} from {} to {}'.format(city, state, start_date, end_date))
+	plt.title('Median Listing Prices for {}, {} {} from {} to {}'.format(city, state, zipcode, start_date, end_date))
 	plt.show()
 	
 def plotAverageListings():
@@ -109,7 +108,7 @@ def plotAverageListings():
 	if len(dates) < 10:
 		graph.set_xticks(xdates)
 		graph.set_xticklabels([dt.strftime('%Y-%m-%d') for dt in dates])
-	plt.title('Average Listing Prices for {}, {} from {} to {}'.format(city, state, start_date, end_date))
+	plt.title('Average Listing Prices for {}, {} {} from {} to {}'.format(city, state, zipcode, start_date, end_date))
 	plt.show()
 
 plotNumProperties()
