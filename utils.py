@@ -34,10 +34,14 @@ def get_page(url):
 	global page_request_count
 	print 'Loading data from {}.'.format(url)
 	page_request_count += 1
-	request = urllib2.urlopen(url)
-	response = str(request.read())
-	print 'Total Page Requests: {}'.format(page_request_count)
-	return response
+	try:
+		request = urllib2.urlopen(url)
+		response = str(request.read())
+		print 'Total Page Requests: {}'.format(page_request_count)
+		return response
+	except urllib2.URLError as e:
+		print 'Error accessing web page {}.'.format(url)
+		raise e
 
 class Quarter:
 	def __init__(self, string, start_month, start_day, end_month, end_day):
