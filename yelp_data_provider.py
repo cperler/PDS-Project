@@ -1,6 +1,5 @@
 from yelp import ReviewSearchApi
 from utils import *
-import pickle
 
 YELP_KEY = '-zHKh7Z8UaWOSNECS85GWA'
 
@@ -9,11 +8,10 @@ class YelpDataProvider():
 		self.APIKEY = APIKEY
 		
 	def getReviewsByLocation(self, location, radius=1, search_terms='', limit=20):
-	
 		filename = '{}_{}_{}_reviews.txt'.format(location, search_terms, limit)
 		if file_exists(filename):
 			print 'Loading {} reviews for {} - {} from file {}.'.format(limit, location, search_terms, filename)
-			return pickle.load(open('.\\data\\' + filename, 'rb'))
+			return pickle_load(filename)
 		
 		results = ReviewSearchApi(client_key=self.APIKEY, output='json').by_location(location, term=search_terms, radius=radius, num_biz_requested=limit)
 		if results['message']['text'] != 'OK':
@@ -23,7 +21,7 @@ class YelpDataProvider():
 		for result in results['businesses']:
 			business = YelpBusiness(result)
 			businesses.append(business)
-		pickle.dump(businesses, open('.\\data\\' + filename, 'wb'))
+		pickle_it(filename, businesses)
 		return businesses
 		
 class YelpBusiness():

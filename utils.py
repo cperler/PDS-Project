@@ -5,6 +5,7 @@ from datetime import date
 import re
 import json
 import os
+import pickle
 
 DATA_PATH = '.\\data\\'
 
@@ -18,6 +19,17 @@ def write_to_file(filename, content, path=DATA_PATH):
 def read_from_file(filename, path=DATA_PATH):
 	file = open(path+filename, 'r')
 	contents = file.read()
+	return contents
+	
+def pickle_it(filename, content, path=DATA_PATH):
+	file = open(path+filename, 'wb')
+	pickle.dump(content, file)
+	file.close()
+
+def pickle_load(filename, path=DATA_PATH):
+	file = open(path+filename, 'rb')
+	contents = pickle.load(file)
+	file.close()
 	return contents
 	
 def file_exists(filename, path=DATA_PATH):
