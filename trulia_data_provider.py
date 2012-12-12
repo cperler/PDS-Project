@@ -3,8 +3,9 @@ except ImportError: import urllib2
 import urllib
 import xml.etree.ElementTree as et
 from utils import *
+import keys
 
-TRULIA_KEY = 'baq3jbma7dc82f2rtkdwvt7w'
+TRULIA_KEY = keys.TRULIA_KEY
 
 class TruliaDataProvider:
 	TRULIA_API = 'http://api.trulia.com/webservices.php?{}'

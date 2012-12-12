@@ -1,7 +1,8 @@
 from yelp import ReviewSearchApi
 from utils import *
+import keys
 
-YELP_KEY = '-zHKh7Z8UaWOSNECS85GWA'
+YELP_KEY = keys.YELP_KEY
 
 class YelpDataProvider():	
 	def __init__(self, APIKEY):
