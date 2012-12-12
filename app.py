@@ -8,15 +8,55 @@ from yelp_data_provider import *
 import numpy
 
 DEBUG = False
-start_date = date(2012,1,1)
-end_date = date(2012,12,10)
-zipcode = 10019
+start_date = date(2012,6,1)
+end_date = date(2012,12,12)
+zipcode = 10538
 
 trulia = TruliaDataProvider(TRULIA_KEY)
 yelp = YelpDataProvider(YELP_KEY)
 city, state = ZipcodeProvider(trulia).get_city_for_zipcode(zipcode)
 location = '{}, {} {}'.format(city, state, zipcode)
-search_terms = 'bar'
+search_terms = 'burger king'
+
+from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+
+PORT_NUMBER = 8080
+
+#This class will handles any incoming request from
+#the browser 
+class myHandler(BaseHTTPRequestHandler):
+	
+	#Handler for the GET requests
+	def do_GET(self):
+		tokens = self.path.split('/')
+		zip = tokens[1]
+		terms = tokens[2]
+		print zip, ' ', terms
+	
+		self.send_response(200)
+		self.send_header('Content-type','text/html')		
+		self.end_headers()
+		# Send the html message
+		self.wfile.write("Hello World !")
+		return
+
+try:
+	#Create a web server and define the handler to manage the
+	#incoming request
+	server = HTTPServer(('', PORT_NUMBER), myHandler)
+	print 'Started httpserver on port ' , PORT_NUMBER
+	
+	#Wait forever for incoming htto requests
+	server.serve_forever()
+
+except KeyboardInterrupt:
+	print '^C received, shutting down the web server'
+	server.socket.close()
+	
+
+
+
+
 
 def yelp_test(location, terms):
 	results = yelp.getReviewsByLocation(location, search_terms=terms, limit=10)
@@ -57,7 +97,7 @@ def yelp_test(location, terms):
 	plt.legend(loc=3, prop={'size':8})
 	plt.title('Yelp Reviews for \'{}\' in {} ({} Results)'.format(terms, location, len(results)))
 	plt.show()
-yelp_test(location, search_terms)
+#yelp_test(location, search_terms)
 
 def trulia_test():
 	dates = []
@@ -165,3 +205,54 @@ def trulia_test():
 	plotMedianListings()
 	plotAverageListings()
 #trulia_test()
+
+def combined_test(location, terms):
+	results = yelp.getBusinessByName(location, terms)
+	if len(results) != 1:
+		raise Exception('Unable to find a business for {}'.format(terms))
+		
+	# check that the given business location is within range of the point of origin and radius
+	global zipcode, city, state
+	zipcode = results[0].zip	
+	city, state = ZipcodeProvider(trulia).get_city_for_zipcode(zipcode)
+	print('Using zipcode from Yelp business: {}'.format(zipcode))
+	
+	fig = plt.figure()
+	graph = fig.add_subplot(111)	
+	for business in results:
+		print('{}'.format(business))
+		
+		dates = []
+		ratings = {}
+		
+		for review in business.reviews:
+			pub_date = mdates.date2num(datetime.strptime(review.pub_date, '%Y-%m-%d'))
+			rating = float(review.rating)
+			
+			if pub_date not in dates:
+				dates.append(pub_date)
+			
+			if pub_date not in ratings:
+				ratings[pub_date] = rating
+			else:
+				ratings[pub_date] = (ratings[pub_date] + rating) / 2.0
+	
+		dates.sort()
+		sorted_ratings = []
+
+		for dt in dates:
+			sorted_ratings.append(ratings[dt])
+			
+		if len(results) == 1:
+			plt.plot_date(dates, sorted_ratings, '-|', label=business.name)		
+			
+		z = numpy.polyfit(dates, sorted_ratings, len(dates) / 12)
+		p = numpy.poly1d(z)
+		plt.plot_date(dates,p(dates),'--', label=business.name)
+	
+	plt.legend(loc=3, prop={'size':8})
+	plt.title('Yelp Reviews for \'{}\' in {} ({} Results)'.format(terms, location, len(results)))
+	plt.show()
+	
+	trulia_test()
+combined_test(location, search_terms)

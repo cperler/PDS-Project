@@ -8,7 +8,11 @@ class YelpDataProvider():
 	def __init__(self, APIKEY):
 		self.APIKEY = APIKEY
 		
-	def getReviewsByLocation(self, location, radius=1, search_terms='', limit=20):
+	def getBusinessByName(self, location, business_name, radius=.400, limit=1):
+		businesses = self.getReviewsByLocation(location, radius, business_name, limit)
+		return businesses
+		
+	def getReviewsByLocation(self, location, radius=.400, search_terms='', limit=20):
 		filename = '{}_{}_{}_reviews.txt'.format(location, search_terms, limit)
 		if file_exists(filename):
 			print 'Loading {} reviews for {} - {} from file {}.'.format(limit, location, search_terms, filename)
@@ -38,6 +42,7 @@ class YelpBusiness():
 		self.longitude = result_from_query['longitude']
 		self.avg_rating = result_from_query['avg_rating']
 		self.review_count = result_from_query['review_count']
+		self.zip = result_from_query['zip']
 		self.has_extra_content = False
 		self.getExtraContent()
 
@@ -69,10 +74,11 @@ class YelpBusiness():
 	def __str__(self):
 		out = 'Business Name: {}\n' \
 			'URL: {}\n' \
+			'Zip: {}\n' \
 			'Latitude: {}\n' \
 			'Longitude: {}\n' \
 			'Avg Rating: {}\n' \
-			'# Reviews: {}\n'.format(self.name, self.url, self.latitude, self.longitude, self.avg_rating, self.review_count)			
+			'# Reviews: {}\n'.format(self.name, self.url, self.zip, self.latitude, self.longitude, self.avg_rating, self.review_count)			
 
 		if hasattr(self, 'price_range'):
 			out += 'Price Range: {}\n'.format(self.price_range)
