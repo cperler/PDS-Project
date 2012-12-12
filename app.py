@@ -5,6 +5,7 @@ from datetime import datetime
 from zip_data_provider import *
 from trulia_data_provider import *
 from yelp_data_provider import *
+import numpy
 
 DEBUG = False
 start_date = date(2012,1,1)
@@ -15,12 +16,48 @@ trulia = TruliaDataProvider(TRULIA_KEY)
 yelp = YelpDataProvider(YELP_KEY)
 city, state = ZipcodeProvider(trulia).get_city_for_zipcode(zipcode)
 location = '{}, {} {}'.format(city, state, zipcode)
+search_terms = 'bar'
 
-def yelp_test():
-	results = yelp.getReviewsByLocation(location, search_terms='bars', limit=1)
+def yelp_test(location, terms):
+	results = yelp.getReviewsByLocation(location, search_terms=terms, limit=10)
+
+	fig = plt.figure()
+	graph = fig.add_subplot(111)	
 	for business in results:
 		print('{}'.format(business))
-yelp_test()
+		
+		dates = []
+		ratings = {}
+		
+		for review in business.reviews:
+			pub_date = mdates.date2num(datetime.strptime(review.pub_date, '%Y-%m-%d'))
+			rating = float(review.rating)
+			
+			if pub_date not in dates:
+				dates.append(pub_date)
+			
+			if pub_date not in ratings:
+				ratings[pub_date] = rating
+			else:
+				ratings[pub_date] = (ratings[pub_date] + rating) / 2.0
+	
+		dates.sort()
+		sorted_ratings = []
+
+		for dt in dates:
+			sorted_ratings.append(ratings[dt])
+			
+		if len(results) == 1:
+			plt.plot_date(dates, sorted_ratings, '-|', label=business.name)		
+			
+		z = numpy.polyfit(dates, sorted_ratings, len(dates) / 12)
+		p = numpy.poly1d(z)
+		plt.plot_date(dates,p(dates),'--', label=business.name)
+	
+	plt.legend(loc=3, prop={'size':8})
+	plt.title('Yelp Reviews for \'{}\' in {} ({} Results)'.format(terms, location, len(results)))
+	plt.show()
+yelp_test(location, search_terms)
 
 def trulia_test():
 	dates = []

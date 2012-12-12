@@ -86,3 +86,6 @@ class YelpReview():
 	def __init__(self, rating, pub_date):
 		self.rating = rating
 		self.pub_date = pub_date
+	
+	def __str__(self):
+		return self.pub_date + ' = ' + self.rating
