@@ -17,7 +17,7 @@ city, state = ZipcodeProvider(trulia).get_city_for_zipcode(zipcode)
 location = '{}, {} {}'.format(city, state, zipcode)
 
 def yelp_test():
-	results = yelp.getReviewsByLocation(location, search_terms='bars', limit=2)
+	results = yelp.getReviewsByLocation(location, search_terms='bars', limit=3)
 	for business in results:
 		print('{}'.format(business))
 yelp_test()
