@@ -20,7 +20,7 @@ lat = '40.72542280'
 long= '-73.98223740'
 radius = '300'
 api_key = 'AIzaSyC2LVa5tMpQmnYw3VSxfwlPvME5SXdCPsU'
-poi_categories = ['restaurant', 'school', 'police+station', 'firehouse', 'bar', 'subway+station']
+poi_categories = ['restaurant', 'school', 'police', 'park', 'bar', 'subway_station']
 
 def get_places(lat, long, poi_categories, radius_of_interest=200, api_key ='AIzaSyAOJAXtA2HO04mAKXwHsuIuMTh4YLoU0Yk'):
 	place_name_dict={}
