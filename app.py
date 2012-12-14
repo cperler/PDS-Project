@@ -49,7 +49,7 @@ def in_range(origin, test_location, acceptable_distance):
 	for results in results_map['rows']:
 		for elements in results['elements']:
 			meters = elements['distance']['value']
-	if meters>distance:
+	if meters>acceptable_distance:
 		return False
 	else:
 		return True
