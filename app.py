@@ -22,7 +22,7 @@ radius = '300'
 api_key = 'AIzaSyC2LVa5tMpQmnYw3VSxfwlPvME5SXdCPsU'
 poi_categories = ['restaurant', 'school', 'police+station', 'firehouse', 'bar', 'subway+station']
 
-def get_places(lat, long, poi_categories, radius_of_interest=300, api_key ='AIzaSyC2LVa5tMpQmnYw3VSxfwlPvME5SXdCPsU'):
+def get_places(lat, long, poi_categories, radius_of_interest=200, api_key ='AIzaSyAOJAXtA2HO04mAKXwHsuIuMTh4YLoU0Yk'):
 	place_name_dict={}
 	for type in poi_categories:
 		url = 'https://maps.googleapis.com/maps/api/place/radarsearch/json?location=%s,%s&radius=%s&types=%s&sensor=false&key=%s'% (lat, long, radius_of_interest, type, api_key)
@@ -39,6 +39,7 @@ def get_places(lat, long, poi_categories, radius_of_interest=300, api_key ='AIza
 			place_names.append(new_results_map['result']['name'])
 		place_name_dict[type]=place_names
 	return place_name_dict
+
 
 	
 def in_range(origin, test_location, acceptable_distance):
