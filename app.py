@@ -42,8 +42,16 @@ def get_places(lat, long, poi_categories, radius_of_interest=300, api_key ='AIza
 
 	
 def in_range(origin, test_location, acceptable_distance):
-	# @tyler: placeholder...
-	return True
+	url = 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&sensor=false' % (origin, test)
+	request = urllib2.urlopen(url)
+	results_map = json.loads(request.read())
+	for results in results_map['rows']:
+		for elements in results['elements']:
+			meters = elements['distance']['value']
+	if meters>distance:
+		return False
+	else:
+		return True
 
 def get_zipcode(address):
 	normalized_address = gmaps.geocode(address)
