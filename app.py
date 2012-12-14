@@ -94,6 +94,14 @@ def graph_data(poi_data, real_estate_data):
 		plt.legend(loc=3, prop={'size':8})
 		plt.title(title)
 		return plt
+	
+	def plot_histogram(data, bins, x_label, y_label, title):
+		plt.hist(data, bins=bins)
+		plt.xlabel(x_label)
+		plt.ylabel(y_label)
+		plt.title(title)
+		plt.grid(True)
+		return plt
 		
 	def graph_business_reviews_by_category_over_time():
 		for category in business_by_category:
@@ -152,10 +160,19 @@ def graph_data(poi_data, real_estate_data):
 			x.append(dates)
 			y.append(sorted_ratings)
 			l.append(category)
-		plot_data_with_dates(x, y, '-|', l, 'Yelp!').show()		
+		plot_data_with_dates(x, y, '-|', l, 'Yelp!').show()
+	
+	def graph_category_pricing_histogram():
+		for category in business_by_category:
+			price_ranges = []
+			for business in business_by_category[category]:
+				if hasattr(business, 'price_range'):
+					price_ranges.append(len(business.price_range))
+			plot_histogram(price_ranges, range(0,6,1), 'Price Range', 'Count', 'Yelp!').show()
 	
 	#graph_business_reviews_by_category_over_time()
-	graph_category_reviews_over_time()
+	#graph_category_reviews_over_time()
+	graph_category_pricing_histogram()
 			
 graph_data(data['poi'], data['real_estate'])
 '''

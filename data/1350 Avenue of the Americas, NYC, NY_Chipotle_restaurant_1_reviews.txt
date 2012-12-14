@@ -192,7 +192,7 @@ S'4.0'
 p90
 sg23
 g24
-(S'\x07\xdc\x07\x1a\x00\x00\x00\x00\x00\x00'
+(S'\x07\xdb\x01\x04\x00\x00\x00\x00\x00\x00'
 p91
 tp92
 Rp93
@@ -201,11 +201,11 @@ YelpReview
 p94
 (dp95
 g21
-S'4.0'
+S'5.0'
 p96
 sg23
 g24
-(S'\x07\xdb\x01\x04\x00\x00\x00\x00\x00\x00'
+(S'\x07\xdc\x07\x1a\x00\x00\x00\x00\x00\x00'
 p97
 tp98
 Rp99
@@ -214,7 +214,7 @@ YelpReview
 p100
 (dp101
 g21
-S'5.0'
+S'4.0'
 p102
 sg23
 g24
@@ -341,7 +341,7 @@ tp158
 Rp159
 sbasS'longitude'
 p160
-F-73.980636
+F-73.98068
 sS'address2'
 p161
 V
@@ -355,9 +355,13 @@ VNY
 p165
 sS'latitude'
 p166
-F40.756116
-sS'id'
+F40.756175
+sS'price_range'
 p167
-VLuCM4SY_aIQc9Foblxz0ug
+S'$'
 p168
+sS'id'
+p169
+VLuCM4SY_aIQc9Foblxz0ug
+p170
 sba.

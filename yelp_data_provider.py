@@ -31,7 +31,7 @@ class YelpDataProvider():
 		return businesses
 		
 class YelpBusiness():
-	PRICE_RANGE_RE = 'Ultra High-End\">(.*?)<'
+	PRICE_RANGE_RE = '>(\$+)<'
 	REVIEW_RATINGS_RE = 'ratingValue\" content\=\"(.*?)\"'
 	REVIEW_PUBLISHED_RE = 'datePublished\" content\=\"(.*?)\"'
 	
