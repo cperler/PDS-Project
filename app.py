@@ -6,14 +6,40 @@ from zip_data_provider import *
 from trulia_data_provider import *
 from yelp_data_provider import *
 from googlemaps import GoogleMaps
+import urllib2
+import json
+import re
+import sys
 
 yelp = YelpDataProvider(YELP_KEY)
 trulia = TruliaDataProvider(TRULIA_KEY)
 gmaps = GoogleMaps('AIzaSyC2LVa5tMpQmnYw3VSxfwlPvME5SXdCPsU')
 
-def get_places(origin, poi_categories, radius_of_interest=300):
-	# @tyler: placeholder...
-	return {'bar' : ['Cassidy\'s Pub', 'Suite 55'], 'restaurant' : ['Rue 57', 'Chipotle']}
+
+lat = '40.72542280'
+long= '-73.98223740'
+radius = '300'
+api_key = 'AIzaSyC2LVa5tMpQmnYw3VSxfwlPvME5SXdCPsU'
+poi_categories = ['restaurant', 'school', 'police+station', 'firehouse', 'bar', 'subway+station']
+
+def get_places(lat, long, poi_categories, radius_of_interest=300, api_key ='AIzaSyC2LVa5tMpQmnYw3VSxfwlPvME5SXdCPsU'):
+	place_name_dict={}
+	for type in poi_categories:
+		url = 'https://maps.googleapis.com/maps/api/place/radarsearch/json?location=%s,%s&radius=%s&types=%s&sensor=false&key=%s'% (lat, long, radius_of_interest, type, api_key)
+		request = urllib2.urlopen(url)
+		results_map = json.loads(request.read())
+		reference_numbers=[]
+		for item in results_map['results']:
+			reference_numbers.append(item['reference'])
+		place_names=[]
+		for numbers in reference_numbers:
+			new_url = 'https://maps.googleapis.com/maps/api/place/details/json?reference=%s&sensor=true&key=%s'% (numbers, api_key)
+			new_request = urllib2.urlopen(new_url)
+			new_results_map = json.loads(new_request.read())
+			place_names.append(new_results_map['result']['name'])
+		place_name_dict[type]=place_names
+	return place_name_dict
+
 	
 def in_range(origin, test_location, acceptable_distance):
 	# @tyler: placeholder...
