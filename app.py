@@ -38,14 +38,26 @@ def get_places(lat, long, poi_categories, radius_of_interest=200, api_key ='AIza
 			new_results_map = json.loads(new_request.read())
 			place_names.append(new_results_map['result']['name'])
 		place_name_dict[type]=place_names
-		if place_name_dict['police'] != []:
-			place_name_dict['police'] = 1 
-		else:
-			place_name_dict['police'] = 0
-		if place_name_dict['subway_station'] != []:
-			place_name_dict['subway_station'] = 1 
-		else:
-			place_name_dict['subway_station'] = 0
+		if 'police' in place_name_dict:
+			if place_name_dict['police'] != []:
+				place_name_dict['police'] = 1 
+			else:
+				place_name_dict['police'] = 0
+		if 'subway_station' in place_name_dict:
+			if place_name_dict['subway_station'] != []:
+				place_name_dict['subway_station'] = 1 
+			else:
+				place_name_dict['subway_station'] = 0
+		if 'school' in place_name_dict:
+			if place_name_dict['school'] != []:
+				place_name_dict['school'] = 1 
+			else:
+				place_name_dict['school'] = 0
+		if 'park' in place_name_dict:
+			if place_name_dict['park'] != []:
+				place_name_dict['park'] = 1 
+			else:
+				place_name_dict['park'] = 0
 	return place_name_dict
 
 
