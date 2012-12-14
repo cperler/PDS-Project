@@ -43,7 +43,7 @@ def get_places(lat, long, poi_categories, radius_of_interest=200, api_key ='AIza
 
 	
 def in_range(origin, test_location, acceptable_distance):
-	url = 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&sensor=false' % (origin, test)
+	url = 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&sensor=false' % (origin, test_location)
 	request = urllib2.urlopen(url)
 	results_map = json.loads(request.read())
 	for results in results_map['rows']:
