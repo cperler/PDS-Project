@@ -4,6 +4,7 @@ import urllib
 import xml.etree.ElementTree as et
 from utils import *
 import keys
+from datetime import datetime
 
 TRULIA_KEY = keys.TRULIA_KEY
 
@@ -54,3 +55,31 @@ class TruliaDataProvider:
 		page = get_page(url)
 		tree = et.fromstring(page)
 		return tree
+		
+	def parse_listings(self, listing_tree):
+		listings = []
+		for listing_stat in listing_tree.findall('./response/TruliaStats/listingStats/listingStat'):
+			weekEndingDate = listing_stat.find('weekEndingDate').text
+			for subcategory in listing_stat.findall('./listingPrice/subcategory'):		
+				type = subcategory.find('type').text
+				numProperties = subcategory.find('numberOfProperties').text
+				medianListing = subcategory.find('medianListingPrice').text
+				avgListing = subcategory.find('averageListingPrice').text
+				
+				listing = TruliaListing(weekEndingDate, type, numProperties, medianListing, avgListing)
+				listings.append(listing)
+		return listings
+		
+class TruliaListing():
+	def __init__(self, weekEndingDate, type, numProperties, medianListing, avgListing):
+		self.weekEndingDate = datetime.strptime(weekEndingDate, '%Y-%m-%d')
+		self.type = type
+		self.numProperties = numProperties
+		self.medianListing = medianListing
+		self.avgListing = avgListing
+	
+	def __str__(self):
+		return '{} ({}, {} properties)'.format(self.type, self.weekEndingDate, self.numProperties)
+		
+	def __repr__(self):
+		return self.__str__()

@@ -1,11 +1,10 @@
-import pprint
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import numpy
 from datetime import datetime
 from zip_data_provider import *
 from trulia_data_provider import *
 from yelp_data_provider import *
-import numpy
 from googlemaps import GoogleMaps
 
 yelp = YelpDataProvider(YELP_KEY)
@@ -52,20 +51,33 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 				
 				if in_range(origin, business.get_address(), 400):
 					valid_businesses.append(business)
+	print('Collected data from yelp.')
+		
+	trulia_data = trulia.parse_listings(trulia.get_trulia_data_for_date_range_and_zipcode(trulia_start_dt, trulia_end_dt, zipcode))
+	print('Collected data from trulia.')
 	
-	trulia_data = trulia.get_trulia_data_for_date_range_and_zipcode(trulia_start_dt, trulia_end_dt, zipcode)
-	result = {'poi' : valid_businesses, 'real_estate' : trulia_data}
-	print('Collected data: {}'.format(result))
+	result = {	
+				'poi' : valid_businesses, 
+				'real_estate' : trulia_data, 
+				'origin' : origin, 
+				'zipcode' : zipcode,
+				'dates' : {
+					'yelp' : {'start' : yelp_start_dt, 'end' : yelp_end_dt},
+					'trulia' : {'start' : trulia_start_dt, 'end' : trulia_end_dt}
+				}
+			}
+				
 	return result
 data = collect_data('1350 Avenue of the Americas, NYC, NY', ['restaurant', 'bar', 'supermarket'], date(2011,1,1), date(2011, 12, 31), date(2012, 1, 1), date(2012, 12, 12))
 
-def graph_data(poi_data, real_estate_data):
+def graph_data(poi_data, real_estate_data, origin, zipcode, yelp_dates, trulia_dates):
 	# 1. graph business reviews / category over time
 	# 2. graph category reviews over time
 	# 3. graph category pricing histogram
 	# 4. graph number of properties per type over time
 	# 5. graph median listing per type over time
 	# 6. graph average listing per type over time
+	
 	# 7. graph category reviews vs average listing per type over time
 	# 8. graph category pricigin vs number of properties per type over time
 	
@@ -75,12 +87,12 @@ def graph_data(poi_data, real_estate_data):
 			business_by_category[business.category] = []
 		business_by_category[business.category].append(business)
 	
-	def plot_data_with_dates(x_list, y_list, format, label_list, title, include_trend=True):
+	def plot_data_with_dates(x_list, y_list, x_label, y_label, format, label_list, title, include_trend=True):
 		if len(y_list) != len(label_list):
 			raise Exception('# of series to plot does not match # of labels for legend.')
 		
 		only_plot_trend = include_trend and len(y_list) > 1
-		fig = plt.figure()
+		fig = plt.figure(figsize=(6*3.13,4*3.13))
 		graph = fig.add_subplot(111)
 
 		data = zip(x_list, y_list, label_list)
@@ -93,9 +105,12 @@ def graph_data(poi_data, real_estate_data):
 				plt.plot_date(x, p(x), '--', label=label)
 		plt.legend(loc=3, prop={'size':8})
 		plt.title(title)
+		plt.xlabel(x_label)
+		plt.ylabel(y_label)
 		return plt
 	
 	def plot_histogram(data, bins, x_label, y_label, title):
+		plt.figure(figsize=(6*3.13,4*3.13))
 		plt.hist(data, bins=bins)
 		plt.xlabel(x_label)
 		plt.ylabel(y_label)
@@ -131,7 +146,12 @@ def graph_data(poi_data, real_estate_data):
 				x.append(dates)
 				y.append(sorted_ratings)
 				l.append(business.name)
-			plot_data_with_dates(x, y, '-|', l, 'Yelp!').show()		
+			
+			yelp_start_dt = yelp_dates['start']
+			yelp_end_dt = yelp_dates['end']
+			graph_title = title.format('Average Yelp Reviews for Category \'{}\''.format(category), yelp_start_dt, yelp_end_dt)
+			
+			plot_data_with_dates(x, y, 'Review Date', 'Business Ranking (Trend)', '-|', l, graph_title).show()			
 	
 	def graph_category_reviews_over_time():
 		x, y, l = [], [], []
@@ -160,7 +180,12 @@ def graph_data(poi_data, real_estate_data):
 			x.append(dates)
 			y.append(sorted_ratings)
 			l.append(category)
-		plot_data_with_dates(x, y, '-|', l, 'Yelp!').show()
+		
+		yelp_start_dt = yelp_dates['start']
+		yelp_end_dt = yelp_dates['end']
+		graph_title = title.format('Yelp Category Comparisons', yelp_start_dt, yelp_end_dt)		
+		
+		plot_data_with_dates(x, y, 'Review Date', 'Category Ranking Avg (Trend)', '-|', l, graph_title).show()
 	
 	def graph_category_pricing_histogram():
 		for category in business_by_category:
@@ -168,222 +193,69 @@ def graph_data(poi_data, real_estate_data):
 			for business in business_by_category[category]:
 				if hasattr(business, 'price_range'):
 					price_ranges.append(len(business.price_range))
-			plot_histogram(price_ranges, range(0,6,1), 'Price Range', 'Count', 'Yelp!').show()
+					
+			yelp_start_dt = yelp_dates['start']
+			yelp_end_dt = yelp_dates['end']
+			graph_title = no_dates_title.format('Yelp Category Price Range Histogram for \'{}\''.format(category), yelp_start_dt, yelp_end_dt)		
+					
+			plot_histogram(price_ranges, range(0,6,1), 'Price Range (# Dollar Signs)', 'Frequency', graph_title).show()
+			
+	def graph_num_properties_over_time():
+		dates = []
+		dates_for_keys = {}
+		numProperties_data = {}
+		medianListing_data = {}
+		avgListing_data = {}
+		
+		for listing in real_estate_data:
+			type = listing.type
+			if type != 'All Properties':
+				weekEndingDate = listing.weekEndingDate
+				if weekEndingDate not in dates:
+					dates.append(weekEndingDate)
+
+				numProperties = listing.numProperties
+				medianListing = listing.medianListing
+				avgListing = listing.avgListing
+				
+				if type not in dates_for_keys:
+					dates_for_keys[type] = []
+				
+				if weekEndingDate not in dates_for_keys[type]:
+					dates_for_keys[type].append(weekEndingDate)
+				
+				if type not in numProperties_data:
+					numProperties_data[type] = []
+				if type not in medianListing_data:
+					medianListing_data[type] = []
+				if type not in avgListing_data:
+					avgListing_data[type] = []
+					
+				numProperties_data[type].append(numProperties)
+				medianListing_data[type].append(medianListing)
+				avgListing_data[type].append(avgListing)
+
+		trulia_start_dt = trulia_dates['start']
+		trulia_end_dt = trulia_dates['end']
+		
+		graph_title = title.format('Number of Trulia Listings', trulia_start_dt, trulia_end_dt)
+		plot_data_with_dates(dates_for_keys.values(), numProperties_data.values(), 'Week Ending Date', 'Count', 
+			'-|', dates_for_keys.keys(), graph_title, include_trend=False).show()
+		
+		graph_title = title.format('Median Trulia Real Estate Prices', trulia_start_dt, trulia_end_dt)
+		plot_data_with_dates(dates_for_keys.values(), medianListing_data.values(), 'Week Ending Date', 'Median Listing Price ($)', 
+			'-|', dates_for_keys.keys(), graph_title, include_trend=False).show()
+		
+		graph_title = title.format('Average Trulia Real Estate Prices', trulia_start_dt, trulia_end_dt)
+		plot_data_with_dates(dates_for_keys.values(), avgListing_data.values(), 'Week Ending Date', 'Avg Listing Price ($)', 
+			'-|', dates_for_keys.keys(), graph_title, include_trend=False).show()
 	
-	#graph_business_reviews_by_category_over_time()
-	#graph_category_reviews_over_time()
+	no_dates_title = '{} for zipcode ' + zipcode
+	title = no_dates_title + ' - {} to {}'
+	
+	graph_business_reviews_by_category_over_time()
+	graph_category_reviews_over_time()
 	graph_category_pricing_histogram()
+	graph_num_properties_over_time()
 			
-graph_data(data['poi'], data['real_estate'])
-'''
-DEBUG = False
-start_date = date(2011,1,1)
-end_date = date(2012,12,12)
-zipcode = 10019
-
-trulia = TruliaDataProvider(TRULIA_KEY)
-
-city, state = ZipcodeProvider(trulia).get_city_for_zipcode(zipcode)
-location = '{}, {} {}'.format(city, state, zipcode)
-search_terms = 'bars'
-
-def yelp_test(location, terms):
-	results = yelp.getReviewsByLocation(location, search_terms=terms, limit=1)
-
-	fig = plt.figure()
-	graph = fig.add_subplot(111)	
-	for business in results:
-		print('{}'.format(business))
-		
-		dates = []
-		ratings = {}
-		
-		for review in business.reviews:
-			pub_date = mdates.date2num(datetime.strptime(review.pub_date, '%Y-%m-%d'))
-			rating = float(review.rating)
-			
-			if pub_date not in dates:
-				dates.append(pub_date)
-			
-			if pub_date not in ratings:
-				ratings[pub_date] = rating
-			else:
-				ratings[pub_date] = (ratings[pub_date] + rating) / 2.0
-	
-	
-		dates.sort()
-		sorted_ratings = []
-
-		for dt in dates:
-			sorted_ratings.append(ratings[dt])
-			
-		if len(results) == 1:
-			plt.plot_date(dates, sorted_ratings, '-|', label=business.name)		
-			
-		z = numpy.polyfit(dates, sorted_ratings, len(dates) / 12)
-		p = numpy.poly1d(z)
-		plt.plot_date(dates,p(dates),'--', label=business.name)
-	
-	plt.legend(loc=3, prop={'size':8})
-	plt.title('Yelp Reviews for \'{}\' in {} ({} Results)'.format(terms, location, len(results)))
-	plt.show()
-#yelp_test(location, search_terms)
-
-def trulia_test():
-	dates = []
-	keys = []
-	dates_for_keys = {}
-	data = {}
-
-	trulia_data = trulia.get_trulia_data_for_date_range_and_zipcode(start_date, end_date, zipcode)
-	for listing_stat in trulia_data.findall('./response/TruliaStats/listingStats/listingStat'):
-		weekEndingDate = listing_stat.find('weekEndingDate').text
-		if weekEndingDate not in dates:
-			dates.append(datetime.strptime(weekEndingDate, '%Y-%m-%d'))
-		for subcategory in listing_stat.findall('./listingPrice/subcategory'):		
-			type = subcategory.find('type').text
-			numProperties = subcategory.find('numberOfProperties').text
-			medianListing = subcategory.find('medianListingPrice').text
-			avgListing = subcategory.find('averageListingPrice').text
-			
-			datapoint = (numProperties, medianListing, avgListing)
-			
-			if type not in dates_for_keys:
-				dates_for_keys[type] = []
-			
-			if weekEndingDate not in dates_for_keys[type]:
-				dates_for_keys[type].append(weekEndingDate)
-			
-			if type not in keys:
-				keys.append(type)
-				
-			if type not in data:
-				data[type] = []
-				
-			data[type].append(datapoint)
-
-	if DEBUG:
-		pp = pprint.PrettyPrinter(indent=4)
-		print pp.pprint(dates_for_keys)
-
-	xdates = mdates.date2num(dates)
-
-	def plotNumProperties():
-		fig = plt.figure()
-		graph = fig.add_subplot(111)
-		for k in keys:
-			if k != 'All Properties':
-				v = data[k]
-				numProperties = []		
-				for numProperty, _, _ in v:
-					numProperties.append(numProperty)
-				if len(dates) < 10:
-					graph.plot(mdates.datestr2num(dates_for_keys[k]), numProperties, '-|', label=k)	
-				else:
-					plt.plot_date(mdates.datestr2num(dates_for_keys[k]), numProperties, '-|', label=k)
-
-		plt.legend(loc=3)
-		if len(dates) < 10:
-			graph.set_xticks(xdates)
-			graph.set_xticklabels([dt.strftime('%Y-%m-%d') for dt in dates])
-		plt.title('# Properties Listed for {}, {} {} from {} to {}'.format(city, state, zipcode, start_date, end_date))
-		plt.show()
-
-	def plotMedianListings():
-		fig = plt.figure()
-		graph = fig.add_subplot(111)
-		for k in keys:
-			if k != 'All Properties':
-				v = data[k]
-				medianListings = []		
-				for _, medianListing, _ in v:
-					medianListings.append(medianListing)
-				if len(dates) < 10:
-					graph.plot(mdates.datestr2num(dates_for_keys[k]), medianListings, '-|', label=k)	
-				else:
-					plt.plot_date(mdates.datestr2num(dates_for_keys[k]), medianListings, '-|', label=k)
-
-		plt.legend(loc=3)
-		if len(dates) < 10:
-			graph.set_xticks(xdates)
-			graph.set_xticklabels([dt.strftime('%Y-%m-%d') for dt in dates])
-		plt.title('Median Listing Prices for {}, {} {} from {} to {}'.format(city, state, zipcode, start_date, end_date))
-		plt.show()
-		
-	def plotAverageListings():
-		fig = plt.figure()
-		graph = fig.add_subplot(111)
-		for k in keys:
-			if k != 'All Properties':
-				v = data[k]
-				averageListings = []		
-				for _, _, averageListing in v:
-					averageListings.append(averageListing)
-				if len(dates) < 10:
-					graph.plot(mdates.datestr2num(dates_for_keys[k]), averageListings, '-|', label=k)	
-				else:
-					plt.plot_date(mdates.datestr2num(dates_for_keys[k]), averageListings, '-|', label=k)
-
-		plt.legend(loc=3)
-		if len(dates) < 10:
-			graph.set_xticks(xdates)
-			graph.set_xticklabels([dt.strftime('%Y-%m-%d') for dt in dates])
-		plt.title('Average Listing Prices for {}, {} {} from {} to {}'.format(city, state, zipcode, start_date, end_date))
-		plt.show()
-
-	plotNumProperties()
-	plotMedianListings()
-	plotAverageListings()
-#trulia_test()
-
-def combined_test(location, terms):
-	results = yelp.getBusinessByName(location, terms)
-	if len(results) != 1:
-		raise Exception('Unable to find a business for {}'.format(terms))
-		
-	# check that the given business location is within range of the point of origin and radius
-	global zipcode, city, state
-	zipcode = results[0].zip	
-	city, state = ZipcodeProvider(trulia).get_city_for_zipcode(zipcode)
-	print('Using zipcode from Yelp business: {}'.format(zipcode))
-	
-	fig = plt.figure()
-	graph = fig.add_subplot(111)	
-	for business in results:
-		print('{}'.format(business))
-		
-		dates = []
-		ratings = {}
-		
-		for review in business.reviews:
-			pub_date = mdates.date2num(datetime.strptime(review.pub_date, '%Y-%m-%d'))
-			rating = float(review.rating)
-			
-			if pub_date not in dates:
-				dates.append(pub_date)
-			
-			if pub_date not in ratings:
-				ratings[pub_date] = rating
-			else:
-				ratings[pub_date] = (ratings[pub_date] + rating) / 2.0
-	
-		dates.sort()
-		sorted_ratings = []
-
-		for dt in dates:
-			sorted_ratings.append(ratings[dt])
-			
-		if len(results) == 1:
-			plt.plot_date(dates, sorted_ratings, '-|', label=business.name)		
-			
-		z = numpy.polyfit(dates, sorted_ratings, len(dates) / 12)
-		p = numpy.poly1d(z)
-		plt.plot_date(dates,p(dates),'--', label=business.name)
-	
-	plt.legend(loc=3, prop={'size':8})
-	plt.title('Yelp Reviews for \'{}\' in {} ({} Results)'.format(terms, location, len(results)))
-	plt.show()
-	
-	trulia_test()
-#combined_test(location, search_terms)
-'''
+graph_data(data['poi'], data['real_estate'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
