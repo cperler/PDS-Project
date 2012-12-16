@@ -1,0 +1,186 @@
+(lp0
+VThe Hilton Club New York
+p1
+aV53rd and 6th
+p2
+aVLe Parker Meridien
+p3
+aVBurger Joint
+p4
+aVThe Modern
+p5
+aVNorma's
+p6
+aVCafe 2
+p7
+aVNobu Fifty Seven
+p8
+aVMangia
+p9
+aVFive Guys Burgers and Fries
+p10
+aVMilos, Estiatorio
+p11
+aVMá Pêche
+p12
+aVRue 57
+p13
+aVLa Bonne Soupe
+p14
+aVBenoit
+p15
+aVUncle Jack's Steakhouse
+p16
+aVBeacon
+p17
+aVTOPAZ Thai Restaurant
+p18
+aVChina Grill
+p19
+aVKatsu-Hama
+p20
+aVREMI
+p21
+aVAbboccato
+p22
+aVIl Gattopardo
+p23
+aVSubway
+p24
+aVBenihana
+p25
+aVJoe's Shanghai
+p26
+aVRestaurant Associates
+p27
+aVDig Inn Seasonal Market
+p28
+aVAu Bon Pain
+p29
+aVFresh & Co
+p30
+aVLa Petite Maison
+p31
+aVBistro Milano
+p32
+aVAstro Restaurant
+p33
+aVIse
+p34
+aVMichael's New York
+p35
+aVPazza Notte
+p36
+aVCirco
+p37
+aVCerte
+p38
+aVSalon de Ning
+p39
+aVChom Chom NYC
+p40
+aVPret A Manger
+p41
+aVTang Pavilion
+p42
+aVConnolly's Pub & Restaurant
+p43
+aVCafe Classico
+p44
+aVMurals on 54
+p45
+aVGreat American Health Bar
+p46
+aVIl Tinello Ristorante
+p47
+aVIl Corso Restaurant
+p48
+aVKiku Japanese Restaurant Inc
+p49
+aVSushiya
+p50
+aVPizzArte
+p51
+aVZibetto
+p52
+aV53rd Street Gourmet Deli Inc
+p53
+aVNew York Thai Grill-Sushi Bar
+p54
+aVBrasserie Pushkin
+p55
+aVSuite 55 Restaurant and Hookah Lounge
+p56
+aVStarbucks
+p57
+aVCassidys Pub
+p58
+aVChipotle Mexican Grill
+p59
+aVTuscany
+p60
+aVPrinton 56
+p61
+aVLindt Chocolate Shop
+p62
+aVBay Leaf Indian Brasserie
+p63
+aVTina's Restaurant
+p64
+aVRandolph's Lounge
+p65
+aVRaga Indian Restaurant
+p66
+aVMadrit's Italian Ristorante
+p67
+aVNew York Marketplace
+p68
+aVD & S Market Place
+p69
+aVStage Star Deli
+p70
+aVRoy Bean
+p71
+aVSUBMARINA CALIFORNIA SUBS
+p72
+aVKiroihana Japanese Restaurant
+p73
+aVSitar Indian Cuisine
+p74
+aVCity Fifty Five
+p75
+aV56 Manhattan Gourmet
+p76
+aVAllegria Restaurant
+p77
+aVAlain Ducasse Ny Inc
+p78
+aVA La Mode Oriental
+p79
+aVDig Inn
+p80
+aVVago
+p81
+aVPalette Restaurant Wine Bar
+p82
+aVTukasa Inc
+p83
+aVLynn's Cafe
+p84
+aVBuk Balkan Bistro
+p85
+aVTinos.com
+p86
+aVBrasserie Pushkin
+p87
+aVPotbelly Sandwich Shop
+p88
+aVAsia Five Eight LLC
+p89
+aV212 Restaurant Consultants
+p90
+aVChop't Creative Salad
+p91
+aVJillard Corporation
+p92
+a.

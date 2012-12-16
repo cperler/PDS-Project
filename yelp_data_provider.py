@@ -14,6 +14,7 @@ class YelpDataProvider():
 		return businesses
 		
 	def getReviewsByLocation(self, location, radius=1, search_terms='', limit=20, category=None):
+		search_terms = removeNonAscii(search_terms)
 		filename = '{}_{}_{}_{}_reviews.txt'.format(location, search_terms, category, limit)
 		if file_exists(filename):
 			print 'Loading {} reviews for {} - {} from file {}.'.format(limit, location, search_terms, filename)

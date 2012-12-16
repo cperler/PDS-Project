@@ -1,0 +1,32 @@
+(lp0
+VThe Hilton Club New York
+p1
+aVNobu Fifty Seven
+p2
+aVMá Pêche
+p3
+aVBenihana
+p4
+aVThe Carnegie Club
+p5
+aVSalon de Ning
+p6
+aVConnolly's Pub & Restaurant
+p7
+aVCafe Classico
+p8
+aVWhiskey Trader
+p9
+aVNew York Thai Grill-Sushi Bar
+p10
+aVSuite 55 Restaurant and Hookah Lounge
+p11
+aVCassidys Pub
+p12
+aVRandolph's Lounge
+p13
+aVLaurelton Diamonds Inc
+p14
+aVShoreham Bar
+p15
+a.

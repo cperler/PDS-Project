@@ -1,43 +1,55 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from mpl_toolkits.axes_grid1 import host_subplot
+import mpl_toolkits.axisartist as AA
 import numpy
 from datetime import datetime
 from zip_data_provider import *
 from trulia_data_provider import *
 from yelp_data_provider import *
+from utils import *
 from googlemaps import GoogleMaps
 import urllib2
 import json
 import re
 import sys
+from keys import *
 
 yelp = YelpDataProvider(YELP_KEY)
 trulia = TruliaDataProvider(TRULIA_KEY)
-gmaps = GoogleMaps('AIzaSyC2LVa5tMpQmnYw3VSxfwlPvME5SXdCPsU')
+gmaps = GoogleMaps(GOOGLE_KEY)
 
-
-lat = '40.72542280'
-long= '-73.98223740'
-radius = '300'
-api_key = 'AIzaSyC2LVa5tMpQmnYw3VSxfwlPvME5SXdCPsU'
+roi = 700
 poi_categories = ['restaurant', 'school', 'police', 'park', 'bar', 'subway_station']
+address = '1350 Avenue of the Americas, NYC, NY'
+yelp_start_dt = date(2011,1,1)
+yelp_end_dt = date(2012, 12, 12)
+trulia_start_dt = date(2011, 1, 1)
+trulia_end_dt = date(2012, 12, 12)
 
-def get_places(lat, long, poi_categories, radius_of_interest=200, api_key ='AIzaSyAOJAXtA2HO04mAKXwHsuIuMTh4YLoU0Yk'):
+def get_places(lat, long, poi_categories, radius_of_interest=roi, api_key = GOOGLE_KEY):
 	place_name_dict={}
 	for type in poi_categories:
-		url = 'https://maps.googleapis.com/maps/api/place/radarsearch/json?location=%s,%s&radius=%s&types=%s&sensor=false&key=%s'% (lat, long, radius_of_interest, type, api_key)
-		request = urllib2.urlopen(url)
-		results_map = json.loads(request.read())
-		reference_numbers=[]
-		for item in results_map['results']:
-			reference_numbers.append(item['reference'])
-		place_names=[]
-		for numbers in reference_numbers:
-			new_url = 'https://maps.googleapis.com/maps/api/place/details/json?reference=%s&sensor=true&key=%s'% (numbers, api_key)
-			new_request = urllib2.urlopen(new_url)
-			new_results_map = json.loads(new_request.read())
-			place_names.append(new_results_map['result']['name'])
-		place_name_dict[type]=place_names
+		filename = '{}_{}_{}_places.txt'.format(lat, long, type)
+		if file_exists(filename):
+			print 'Loading places for {} from file {}.'.format(type, filename)
+			place_name_dict[type] = pickle_load(filename)
+		else:
+			url = 'https://maps.googleapis.com/maps/api/place/radarsearch/json?location=%s,%s&radius=%s&types=%s&sensor=false&key=%s'% (lat, long, radius_of_interest, type, api_key)
+			print('Loading {}.'.format(url))
+			request = urllib2.urlopen(url)
+			results_map = json.loads(request.read())
+			reference_numbers=[]
+			for item in results_map['results']:
+				reference_numbers.append(item['reference'])
+			place_names=[]
+			for numbers in reference_numbers:
+				new_url = 'https://maps.googleapis.com/maps/api/place/details/json?reference=%s&sensor=true&key=%s'% (numbers, api_key)
+				new_request = urllib2.urlopen(new_url)
+				new_results_map = json.loads(new_request.read())
+				place_names.append(new_results_map['result']['name'])
+			pickle_it(filename, place_names)
+			place_name_dict[type]=place_names
 		if 'police' in place_name_dict:
 			if place_name_dict['police'] != []:
 				place_name_dict['police'] = 1 
@@ -57,19 +69,28 @@ def get_places(lat, long, poi_categories, radius_of_interest=200, api_key ='AIza
 			if place_name_dict['park'] != []:
 				place_name_dict['park'] = 1 
 			else:
-				place_name_dict['park'] = 0
+				place_name_dict['park'] = 0	
 	return place_name_dict
 
-
+def get_lat_lon(location):
+	lat, lon = gmaps.address_to_latlng(location)
+	return (lat, lon)
 	
 def in_range(origin, test_location, acceptable_distance):
-	url = 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&sensor=false' % (origin, test_location)
+	formatted_origin = origin.replace(',', '').replace('&', '').replace(' ', '+').replace('++', '+')
+	formatted_test = test_location.replace(',', '').replace('&', '').replace(' ', '+').replace('++', '+')
+	url = 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&sensor=false' % (formatted_origin, formatted_test)
+	print('Loading {}.'.format(url))
 	request = urllib2.urlopen(url)
 	results_map = json.loads(request.read())
+	meters = None
 	for results in results_map['rows']:
 		for elements in results['elements']:
-			meters = elements['distance']['value']
-	if meters>acceptable_distance:
+			if elements['status'] == 'OK':
+				meters = elements['distance']['value']
+			else:
+				return False
+	if meters is not None and meters>acceptable_distance:
 		return False
 	else:
 		return True
@@ -85,12 +106,14 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 	# 3. for each business, download yelp data - only load if business zip matches origin zip
 	# 4. get trulia data for zipcode
 	
-	points_of_interest = get_places(origin, poi_categories)
+	do_not_chart_categories = ['school', 'police', 'park', 'subway_station']
+	lat, lon = get_lat_lon(origin)
+	points_of_interest = get_places(lat, lon, poi_categories)
 	zipcode = get_zipcode(origin)
 
 	valid_businesses = []
 	for category in poi_categories:
-		if category in points_of_interest:
+		if category in points_of_interest and category not in do_not_chart_categories:
 			for poi in points_of_interest[category]:
 				yelp_results = yelp.getReviewsByName(origin, poi, category=category)
 					
@@ -104,7 +127,7 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 				business = yelp_results[0]
 				business.filter_reviews_by_date(yelp_start_dt, yelp_end_dt)
 				
-				if in_range(origin, business.get_address(), 400):
+				if in_range(origin, business.get_address(), roi):
 					valid_businesses.append(business)
 	print('Collected data from yelp.')
 		
@@ -123,19 +146,8 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 			}
 				
 	return result
-data = collect_data('1350 Avenue of the Americas, NYC, NY', ['restaurant', 'bar', 'supermarket'], date(2011,1,1), date(2011, 12, 31), date(2012, 1, 1), date(2012, 12, 12))
 
 def graph_data(poi_data, real_estate_data, origin, zipcode, yelp_dates, trulia_dates):
-	# 1. graph business reviews / category over time
-	# 2. graph category reviews over time
-	# 3. graph category pricing histogram
-	# 4. graph number of properties per type over time
-	# 5. graph median listing per type over time
-	# 6. graph average listing per type over time
-	
-	# 7. graph category reviews vs average listing per type over time
-	# 8. graph category pricigin vs number of properties per type over time
-	
 	business_by_category = {}
 	for business in poi_data:
 		if business.category not in business_by_category:
@@ -156,7 +168,7 @@ def graph_data(poi_data, real_estate_data, origin, zipcode, yelp_dates, trulia_d
 			if not only_plot_trend:
 				plt.plot_date(x, y, format, label=label)
 			if include_trend:
-				p = numpy.poly1d(numpy.polyfit(x, y, max(1, len(x) / 12)))
+				p = numpy.poly1d(numpy.polyfit(x, y, 4))
 				plt.plot_date(x, p(x), '--', label=label)
 		plt.legend(loc=3, prop={'size':8})
 		plt.title(title)
@@ -198,14 +210,17 @@ def graph_data(poi_data, real_estate_data, origin, zipcode, yelp_dates, trulia_d
 				for dt in dates:
 					sorted_ratings.append(ratings[dt])
 				
-				x.append(dates)
-				y.append(sorted_ratings)
-				l.append(business.name)
+				if len(dates) > 0:
+					x.append(dates)
+					y.append(sorted_ratings)
+					l.append(business.name)
+				else:
+					print('Skipping {} as it has no data.'.format(business.name))
 			
 			yelp_start_dt = yelp_dates['start']
 			yelp_end_dt = yelp_dates['end']
 			graph_title = title.format('Average Yelp Reviews for Category \'{}\''.format(category), yelp_start_dt, yelp_end_dt)
-			
+						
 			plot_data_with_dates(x, y, 'Review Date', 'Business Ranking (Trend)', '-|', l, graph_title).show()			
 	
 	def graph_category_reviews_over_time():
@@ -255,7 +270,7 @@ def graph_data(poi_data, real_estate_data, origin, zipcode, yelp_dates, trulia_d
 					
 			plot_histogram(price_ranges, range(0,6,1), 'Price Range (# Dollar Signs)', 'Frequency', graph_title).show()
 			
-	def graph_num_properties_over_time():
+	def graph_properties_over_time():
 		dates = []
 		dates_for_keys = {}
 		numProperties_data = {}
@@ -308,9 +323,96 @@ def graph_data(poi_data, real_estate_data, origin, zipcode, yelp_dates, trulia_d
 	no_dates_title = '{} for zipcode ' + zipcode
 	title = no_dates_title + ' - {} to {}'
 	
+	def graph_category_reviews_vs_real_estate_prices():
+		x, y, l = [], [], []
+		for category in business_by_category:		
+			dates = []
+			ratings = {}
+			for business in business_by_category[category]:
+				for review in business.reviews:
+					pub_date = mdates.date2num(review.pub_date)
+					rating = float(review.rating)
+				
+					if pub_date not in dates:
+						dates.append(pub_date)
+				
+					if pub_date not in ratings:
+						ratings[pub_date] = rating
+					else:
+						ratings[pub_date] = (ratings[pub_date] + rating) / 2.0
+		
+			dates.sort()
+			sorted_ratings = []
+
+			for dt in dates:
+				sorted_ratings.append(ratings[dt])
+			
+			x.append(dates)
+			y.append(sorted_ratings)
+			l.append(category)
+	
+		fig = plt.figure(figsize=(6*3.13,4*3.13))
+		graph = fig.add_subplot(111)
+
+		data = zip(x, y, l)
+		for x, y, label in data:
+			p = numpy.poly1d(numpy.polyfit(x, y, 4))
+			graph.plot_date(x, p(x), '--', label=label)
+		graph.set_xlabel('time')
+		graph.set_ylabel('average score by category')
+		
+		x = []
+		y = []
+		l = []
+			
+		dates_for_keys = {}
+		avgListing_data = {}
+		
+		for listing in real_estate_data:
+			type = listing.type
+			if type != 'All Properties':
+				weekEndingDate = listing.weekEndingDate
+				avgListing = listing.avgListing
+				
+				if type not in dates_for_keys:
+					dates_for_keys[type] = []
+				
+				if weekEndingDate not in dates_for_keys[type]:
+					dates_for_keys[type].append(weekEndingDate)
+				
+				if type not in avgListing_data:
+					avgListing_data[type] = []
+					
+				avgListing_data[type].append(avgListing)
+				
+		for type in avgListing_data.keys():
+			x.append(dates_for_keys[type])
+			y.append(avgListing_data[type])
+			l.append(type)
+	
+		ax2 = graph.twinx()
+	
+		data = zip(x, y, l)		
+		for x, y, label in data:			
+			ax2.plot_date(x, y, '-|', label=label)
+		graph.set_xlabel('time')
+		graph.set_ylabel('average real estate prices')
+		
+		graph.legend(loc=0, prop={'size':8})
+		ax2.legend(loc=2, prop={'size':8})
+		
+		yelp_start_dt = yelp_dates['start']
+		trulia_end_dt = trulia_dates['end']
+		
+		graph_title = title.format('Yelp Reviews vs Trulia Real Estate Prices', yelp_start_dt, trulia_end_dt)
+		plt.title(graph_title)
+		plt.show()
+	
 	graph_business_reviews_by_category_over_time()
 	graph_category_reviews_over_time()
 	graph_category_pricing_histogram()
-	graph_num_properties_over_time()
-			
+	graph_properties_over_time()
+	graph_category_reviews_vs_real_estate_prices()
+
+data = collect_data(address, poi_categories, yelp_start_dt, yelp_end_dt, trulia_start_dt, trulia_end_dt)
 graph_data(data['poi'], data['real_estate'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])

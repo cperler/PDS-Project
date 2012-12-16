@@ -72,6 +72,8 @@ Q3 = Quarter('Q3', 7, 1, 9, 30)
 Q4 = Quarter('Q4', 10, 1, 12, 31)
 QUARTERS = {Q1, Q2, Q3, Q4}
 
+def removeNonAscii(s): return "".join(filter(lambda x: ord(x)<128, s))
+
 def validate_year(year):	
 	pattern = '\d{4}'
 	match = re.search(pattern, str(year))

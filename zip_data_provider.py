@@ -10,7 +10,7 @@ class ZipcodeProvider:
 		self.trulia_data_provider = trulia_data_provider
 		
 	def get_zipcodes_for_city(self, city, state):
-		filename = '{}_{}_zipcodes.txt'.format(city, state)		
+		filename = '{}_{}_zipcodes.txt'.format(city, state)
 		if file_exists(filename):
 			print 'Loading zipcodes for {}, {} from file {}.'.format(city, state, filename)
 			contents = read_from_file(filename)		
