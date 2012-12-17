@@ -31,23 +31,23 @@ sorted_count=sorted(count,key=count.get,reverse=True)
 list_len=len(count)
 
 
-diff= int(sorted_count[0])-int(sorted_count[list_len-1])
+diff= int(sorted_count[0])
 
 for i in range(0,list_len):
 	rslt=sorted_count[i]
-	if i < diff/5:
+	if count[rslt] < diff/5:
 		count[rslt]=5
 	
-	if (i >= diff/5 and i < 2* diff/5):
+	if (count[rslt] >= diff/5 and count[rslt] < 2* diff/5):
 		count[rslt]=4
 	
-	if (i >= 2* diff/5 and i < 3* diff/5):
+	if (count[rslt] >= 2* diff/5 and count[rslt] < 3* diff/5):
 		count[rslt]=3
 	
-	if (i >= 3* diff/5 and i < 4* diff/5):
+	if (count[rslt] >= 3* diff/5 and count[rslt] < 4* diff/5):
 		count[rslt]=2
 	
-	if (i >= 4* diff/5):
+	if (count[rslt] >= 4* diff/5):
 		count[rslt]=1
 	
 		print "% r,% r   " %(rslt,count[str(rslt)])
