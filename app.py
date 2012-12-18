@@ -414,5 +414,9 @@ def graph_data(poi_data, real_estate_data, origin, zipcode, yelp_dates, trulia_d
 	graph_properties_over_time()
 	graph_category_reviews_vs_real_estate_prices()
 
+def analyze_data(poi_data, real_estate_data, origin, zipcode, yelp_dates, trulia_dates):
+	pass
+	
 data = collect_data(address, poi_categories, yelp_start_dt, yelp_end_dt, trulia_start_dt, trulia_end_dt)
 graph_data(data['poi'], data['real_estate'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
+analyze_data(data['poi'], data['real_estate'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
