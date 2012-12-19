@@ -30,7 +30,11 @@ gmaps = GoogleMaps(GOOGLE_KEY)
 roi = 700
 non_categorical_categories = ['school', 'police', 'park', 'subway_station']
 poi_categories = ['restaurant', 'school', 'police', 'park', 'bar', 'subway_station']
-address = '1350 Avenue of the Americas, NYC, NY'
+
+address = raw_input('Enter a street address: ')
+if address == None or address == '':
+	print('Invalid street address, using default: 1350 Avenue of the Americas, NYC, NY')
+	address = '1350 Avenue of the Americas, NYC, NY'
 
 def show_or_save_plot(plot, title):
 	if SAVE_PLOTS:
