@@ -450,7 +450,8 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 				else:
 					ratings[pub_date] = (ratings[pub_date] + rating) / 2.0
 	
-		dates.sort()		
+		dates.sort()
+
 		for dt in dates:
 			if dt not in yelp_data:
 				yelp_data[dt] = []
@@ -461,7 +462,18 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 		for dt in yelp_data:
 			while len(yelp_data[dt]) <= category_idx:
 				yelp_data[dt].append(0)
-			
+
+		dates.reverse()
+		
+		idx = 0
+		while idx <= category_idx:			
+			last_val = 0
+			for dt in dates:
+				if yelp_data[dt][idx] == 0:
+					yelp_data[dt][idx] = last_val
+				else:
+					last_val = yelp_data[dt][idx]
+			idx += 1			
 		category_idx += 1
 	
 	trulia_x, trulia_y = [], []
@@ -517,9 +529,9 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 				_, current_trulia_y = find_trulia_data(trulia_data, yelp_x, 0)
 				trulia_x, trulia_y = find_trulia_data(trulia_data, yelp_x, lookahead)
 				if trulia_x is not None:
-					x.append([int(yelp_x) - max_yelp_dt] + yelp_y)
+					x.append([int(yelp_x) - max_yelp_dt] + yelp_y + [crime_stat] + [noise_stat] + [v for k, v in landmark_frequencies.items()])
 					y.append(trulia_y)		
-					#x.append([(int(yelp_x) - max_yelp_dt)] + [trulia_y])
+					#x.append([(int(yelp_x) - max_yelp_dt)] + [trulia_y] + [crime_stat] + [noise_stat] + [v for k, v in landmark_frequencies.items()])
 					#y.append(sum(yelp_y) / len(yelp_y))
 			
 			x = np.array(x)
@@ -534,8 +546,7 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 			#lr_scores = cross_validation.cross_val_score(lr, x, y, cv=10)
 			lookahead_x.append(lookahead)
 			#accuracy_y.append(scores.mean())
-			accuracy_y.append(lr_score)
-			
+			accuracy_y.append(lr_score)			
 			#accuracy_y.append(1)
 			
 			#if DEBUG:
