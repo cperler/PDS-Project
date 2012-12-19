@@ -35,10 +35,14 @@ address = raw_input('Enter a street address: ')
 if address == None or address == '':
 	print('Invalid street address, using default: 1350 Avenue of the Americas, NYC, NY')
 	address = '1350 Avenue of the Americas, NYC, NY'
+	
+directory = '.\\' + address.replace(',', '').replace(' ', '_')
+if not os.path.exists(directory):
+    os.makedirs(directory)
 
 def show_or_save_plot(plot, title):
-	if SAVE_PLOTS:
-		savefig(title)
+	if SAVE_PLOTS:		
+		savefig(directory + '/' + title + '.png')
 		plot.close()
 	else:
 		plot.show()
@@ -599,7 +603,7 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 				predictions[trulia_type][lookahead] = -1
 			
 		plt.plot(lookahead_x, accuracy_y)
-		graph_title = 'linear regression mean using {}'.format(trulia_type)
+		graph_title = 'Linear Regression Mean Using {}'.format(trulia_type)
 		plt.title(graph_title)
 		plt.xlabel('lookahead period')
 		plt.ylabel('cross validation score - mean')
@@ -607,7 +611,7 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 		
 		for lookahead, training_accuracy_for_target in zip(lookaheads, trained_accuracy_y):
 			plt.plot(targets, training_accuracy_for_target, label=('lookahead ' + str(lookahead)))
-		graph_title = 'trained linear regression using {}'.format(trulia_type)
+		graph_title = 'Trained Linear Regression Using {}'.format(trulia_type)
 		plt.title(graph_title)
 		plt.legend(loc=3, prop={'size':8})
 		plt.xlabel('% test in target')
@@ -652,4 +656,4 @@ results = {
 if DEBUG:
 	pp = pprint.PrettyPrinter(indent=4)
 	pp.pprint(results)
-pprint.pprint(results, open(data['origin'] + '_results.txt', 'w+'))
+pprint.pprint(results, open(directory + '/' + data['origin'] + '_results.txt', 'w+'))
