@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from pylab import *
 import matplotlib.dates as mdates
 from mpl_toolkits.axes_grid1 import host_subplot
 import mpl_toolkits.axisartist as AA
@@ -19,7 +20,9 @@ from sklearn import linear_model, cross_validation, tree
 from crime_reports_by_zip import *
 from Noise_complaints_by_zip import *
 
-DEBUG = True
+DEBUG = False
+SAVE_PLOTS = True
+
 yelp = YelpDataProvider(YELP_KEY)
 trulia = TruliaDataProvider(TRULIA_KEY)
 gmaps = GoogleMaps(GOOGLE_KEY)
@@ -28,6 +31,13 @@ roi = 700
 non_categorical_categories = ['school', 'police', 'park', 'subway_station']
 poi_categories = ['restaurant', 'school', 'police', 'park', 'bar', 'subway_station']
 address = '1350 Avenue of the Americas, NYC, NY'
+
+def show_or_save_plot(plot, title):
+	if SAVE_PLOTS:
+		savefig(title)
+		plot.close()
+	else:
+		plot.show()
 
 def get_places(lat, long, poi_categories, radius_of_interest=roi, api_key = GOOGLE_KEY):
 	place_name_dict={}
@@ -179,7 +189,7 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 			if not only_plot_trend:
 				plt.plot_date(x, y, format, label=label)
 			if include_trend:
-				p = numpy.poly1d(numpy.polyfit(x, y, 4))
+				p = np.poly1d(np.polyfit(x, y, 4))
 				plt.plot_date(x, p(x), '--', label=label)
 		plt.legend(loc=3, prop={'size':8})
 		plt.title(title)
@@ -231,9 +241,9 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 			yelp_start_dt = yelp_dates['start']
 			yelp_end_dt = yelp_dates['end']
 			graph_title = title.format('Average Yelp Reviews for Category \'{}\''.format(category), yelp_start_dt, yelp_end_dt)
-						
-			plot_data_with_dates(x, y, 'Review Date', 'Business Ranking (Trend)', '-|', l, graph_title).show()			
-	
+								
+			show_or_save_plot(plot_data_with_dates(x, y, 'Review Date', 'Business Ranking (Trend)', '-|', l, graph_title), graph_title)
+			
 	def graph_category_reviews_over_time():
 		x, y, l = [], [], []
 		for category in business_by_category:		
@@ -266,7 +276,7 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 		yelp_end_dt = yelp_dates['end']
 		graph_title = title.format('Yelp Category Comparisons', yelp_start_dt, yelp_end_dt)		
 		
-		plot_data_with_dates(x, y, 'Review Date', 'Category Ranking Avg (Trend)', '-|', l, graph_title).show()
+		show_or_save_plot(plot_data_with_dates(x, y, 'Review Date', 'Category Ranking Avg (Trend)', '-|', l, graph_title), graph_title)
 	
 	def graph_category_pricing_histogram():
 		for category in business_by_category:
@@ -279,7 +289,7 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 			yelp_end_dt = yelp_dates['end']
 			graph_title = no_dates_title.format('Yelp Category Price Range Histogram for \'{}\''.format(category), yelp_start_dt, yelp_end_dt)		
 					
-			plot_histogram(price_ranges, range(0,6,1), 'Price Range (# Dollar Signs)', 'Frequency', graph_title).show()
+			show_or_save_plot(plot_histogram(price_ranges, range(0,6,1), 'Price Range (# Dollar Signs)', 'Frequency', graph_title), graph_title)
 			
 	def graph_properties_over_time():
 		dates = []
@@ -320,16 +330,16 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 		trulia_end_dt = trulia_dates['end']
 		
 		graph_title = title.format('Number of Trulia Listings', trulia_start_dt, trulia_end_dt)
-		plot_data_with_dates(dates_for_keys.values(), numProperties_data.values(), 'Week Ending Date', 'Count', 
-			'-|', dates_for_keys.keys(), graph_title, include_trend=False).show()
+		show_or_save_plot(plot_data_with_dates(dates_for_keys.values(), numProperties_data.values(), 'Week Ending Date', 'Count', 
+			'-|', dates_for_keys.keys(), graph_title, include_trend=False), graph_title)
 		
 		graph_title = title.format('Median Trulia Real Estate Prices', trulia_start_dt, trulia_end_dt)
-		plot_data_with_dates(dates_for_keys.values(), medianListing_data.values(), 'Week Ending Date', 'Median Listing Price ($)', 
-			'-|', dates_for_keys.keys(), graph_title, include_trend=False).show()
+		show_or_save_plot(plot_data_with_dates(dates_for_keys.values(), medianListing_data.values(), 'Week Ending Date', 'Median Listing Price ($)', 
+			'-|', dates_for_keys.keys(), graph_title, include_trend=False), graph_title)
 		
 		graph_title = title.format('Average Trulia Real Estate Prices', trulia_start_dt, trulia_end_dt)
-		plot_data_with_dates(dates_for_keys.values(), avgListing_data.values(), 'Week Ending Date', 'Avg Listing Price ($)', 
-			'-|', dates_for_keys.keys(), graph_title, include_trend=False).show()
+		show_or_save_plot(plot_data_with_dates(dates_for_keys.values(), avgListing_data.values(), 'Week Ending Date', 'Avg Listing Price ($)', 
+			'-|', dates_for_keys.keys(), graph_title, include_trend=False), graph_title)
 	
 	no_dates_title = '{} for zipcode ' + zipcode
 	title = no_dates_title + ' - {} to {}'
@@ -367,7 +377,7 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 
 		data = zip(x, y, l)
 		for x, y, label in data:
-			p = numpy.poly1d(numpy.polyfit(x, y, 4))
+			p = np.poly1d(np.polyfit(x, y, 4))
 			graph.plot_date(x, p(x), '--', label=label)
 		graph.set_xlabel('time')
 		graph.set_ylabel('average score by category')
@@ -417,16 +427,17 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 		
 		graph_title = title.format('Yelp Reviews vs Trulia Real Estate Prices', yelp_start_dt, trulia_end_dt)
 		plt.title(graph_title)
-		plt.show()
+		show_or_save_plot(plt, graph_title)
 
-	#graph_business_reviews_by_category_over_time()
-	#graph_category_reviews_over_time()
-	#graph_category_pricing_histogram()
-	#graph_properties_over_time()
-	#graph_category_reviews_vs_real_estate_prices()
+	graph_business_reviews_by_category_over_time()
+	graph_category_reviews_over_time()
+	graph_category_pricing_histogram()
+	graph_properties_over_time()
+	graph_category_reviews_vs_real_estate_prices()
 	return business_by_category
 
 def analyze_data(business_by_category, poi_data, real_estate_data, landmark_frequencies, crime_stat, noise_stat, origin, zipcode, yelp_dates, trulia_dates):
+	predictions = {}
 	yelp_x, yelp_y = [], []	
 	yelp_data = {}
 	category_idx = 0
@@ -463,8 +474,18 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 			while len(yelp_data[dt]) <= category_idx:
 				yelp_data[dt].append(0)
 
+		idx = 0
+		while idx <= category_idx:			
+			last_val = 0
+			for dt in dates:
+				if yelp_data[dt][idx] == 0:
+					yelp_data[dt][idx] = last_val
+				else:
+					last_val = yelp_data[dt][idx]
+			idx += 1			
+
 		dates.reverse()
-		
+			
 		idx = 0
 		while idx <= category_idx:			
 			last_val = 0
@@ -522,6 +543,7 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 		lookaheads = range(0, 390, 30)
 		targets = [float(target) / 100.0 for target in range(5, 100, 5)]
 		trained_accuracy_y = []
+		x_current = []
 		for lookahead in lookaheads:	
 			x = []
 			y = []
@@ -529,30 +551,30 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 				_, current_trulia_y = find_trulia_data(trulia_data, yelp_x, 0)
 				trulia_x, trulia_y = find_trulia_data(trulia_data, yelp_x, lookahead)
 				if trulia_x is not None:
-					x.append([int(yelp_x) - max_yelp_dt] + yelp_y + [crime_stat] + [noise_stat] + [v for k, v in landmark_frequencies.items()])
-					y.append(trulia_y)		
-					#x.append([(int(yelp_x) - max_yelp_dt)] + [trulia_y] + [crime_stat] + [noise_stat] + [v for k, v in landmark_frequencies.items()])
-					#y.append(sum(yelp_y) / len(yelp_y))
+					x_dt = int(yelp_x) - max_yelp_dt
+					x_val = [x_dt] + yelp_y + [crime_stat] + [noise_stat] + [v for k, v in landmark_frequencies.items()]
+					if x_dt == 0:
+						x_current = x_val
+					else:
+						x.append(x_val)
+						y.append(trulia_y)		
+					
+					# if we were to reverse the matrix, and use prices as a predictor of average yelp reviews:
+					# x.append([(int(yelp_x) - max_yelp_dt)] + [trulia_y] + [crime_stat] + [noise_stat] + [v for k, v in landmark_frequencies.items()])
+					# y.append(sum(yelp_y) / len(yelp_y))
 			
 			x = np.array(x)
 			y = np.array(y)
 			
-			lr = linear_model.LogisticRegression()
+			lr = linear_model.LinearRegression()			
+			lr_scores = cross_validation.cross_val_score(lr, x, y, cv=10)
 			
-			kfold = cross_validation.KFold(len(x), k=3)
-			scores = [lr.fit(x[train], y[train]).score(x[test], y[test]) for train, test in kfold]
-			lr_score = sum(scores) / len(scores)
-			
-			#lr_scores = cross_validation.cross_val_score(lr, x, y, cv=10)
+			if DEBUG:
+				print "lr accuracy: %0.2f (+/- %0.3f)" % (lr_scores.mean(), lr_scores.std() / 2)
+				print "lr error rate = %0.2f" % (1 - lr_scores.mean())			
+
 			lookahead_x.append(lookahead)
-			#accuracy_y.append(scores.mean())
-			accuracy_y.append(lr_score)			
-			#accuracy_y.append(1)
-			
-			#if DEBUG:
-				#print "lookahead = {}".format(lookahead)
-				#print "lr accuracy: %0.2f (+/- %0.3f)" % (lr_scores.mean(), lr_scores.std() / 2)
-				#print "lr error rate = %0.2f" % (1 - lr_scores.mean())
+			accuracy_y.append(lr_scores.mean())
 			
 			training_accuracy_for_target = []
 			for target in targets:
@@ -561,36 +583,69 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 				lr_score = lr.score(x_test, y_test)
 				training_accuracy_for_target.append(lr_score)
 			trained_accuracy_y.append(training_accuracy_for_target)
-		
+			
+			if trulia_type not in predictions:
+				predictions[trulia_type] = {}
+			try:
+				prediction = lr.predict(x_current)
+				predictions[trulia_type][lookahead] = {}
+				predictions[trulia_type][lookahead]['prediction'] = int(prediction)
+				predictions[trulia_type][lookahead]['coefficient'] = lr.coef_
+			except ValueError:
+				predictions[trulia_type][lookahead] = -1
+			
 		plt.plot(lookahead_x, accuracy_y)
-		plt.title('linear regression mean using {}'.format(trulia_type))
+		graph_title = 'linear regression mean using {}'.format(trulia_type)
+		plt.title(graph_title)
 		plt.xlabel('lookahead period')
-		plt.ylabel('linear regression mean')
-		plt.show()
+		plt.ylabel('cross validation score - mean')
+		show_or_save_plot(plt, graph_title)
 		
 		for lookahead, training_accuracy_for_target in zip(lookaheads, trained_accuracy_y):
-			plt.plot(targets, training_accuracy_for_target, label=str(lookahead))
-		plt.title('trained linear regression using for {}'.format(trulia_type))
+			plt.plot(targets, training_accuracy_for_target, label=('lookahead ' + str(lookahead)))
+		graph_title = 'trained linear regression using {}'.format(trulia_type)
+		plt.title(graph_title)
 		plt.legend(loc=3, prop={'size':8})
 		plt.xlabel('% test in target')
 		plt.ylabel('% accuracy')
-		plt.show()
+		show_or_save_plot(plt, graph_title)
+
+	return predictions
 
 yelp_start_dt = date(2011, 1, 1)
-yelp_end_dt = date(2011, 12, 12)
+yelp_end_dt = date(2012, 9, 12)
 trulia_start_dt = date(2011, 1, 1)
 trulia_end_dt = date(2012, 12, 12)
+trulia_end_dt_minus_1_week = date(2012, 12, 5)
 
 if DEBUG:	
 	data = pickle_load('datums')
+	business_by_category = pickle_load('business_by_category')
 else:
 	data = collect_data(address, poi_categories, yelp_start_dt, yelp_end_dt, trulia_start_dt, trulia_end_dt)
 	pickle_it('datums', data)
-
-if DEBUG:
-	business_by_category = pickle_load('business_by_category')
-else:
+	
 	business_by_category = graph_data(data['poi'], data['real_estate'], data['landmark_frequencies'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
 	pickle_it('business_by_category', business_by_category)
 
-analyze_data(business_by_category, data['poi'], data['real_estate'], data['landmark_frequencies'], data['crime_stat'], data['noise_stat'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
+predictions = analyze_data(business_by_category, data['poi'], data['real_estate'], data['landmark_frequencies'], data['crime_stat'], data['noise_stat'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
+
+current_prices = {}
+current_listing_info = trulia.parse_listings(trulia.get_trulia_data_for_date_range_and_zipcode(trulia_end_dt_minus_1_week, trulia_end_dt, data['zipcode']))
+for listing in current_listing_info:
+	type = listing.type	
+	avgListing = listing.avgListing
+	current_prices[type] = avgListing
+
+results = {
+	'predictions' : predictions,
+	'origin' : data['origin'],
+	'zipcode' : data['zipcode'],
+	'dates' : data['dates'],
+	'trulia' : current_prices
+}
+
+if DEBUG:
+	pp = pprint.PrettyPrinter(indent=4)
+	pp.pprint(results)
+pprint.pprint(results, open(data['origin'] + '_results.txt', 'w+'))
