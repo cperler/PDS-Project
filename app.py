@@ -443,8 +443,11 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 	graph_business_reviews_by_category_over_time()
 	graph_category_reviews_over_time()
 	graph_category_pricing_histogram()
-	graph_properties_over_time()
-	graph_category_reviews_vs_real_estate_prices()
+	try:
+		graph_properties_over_time()
+		graph_category_reviews_vs_real_estate_prices()
+	except ValueError:
+		pass
 	return business_by_category
 
 def analyze_data(business_by_category, poi_data, real_estate_data, landmark_frequencies, crime_stat, noise_stat, origin, zipcode, yelp_dates, trulia_dates):

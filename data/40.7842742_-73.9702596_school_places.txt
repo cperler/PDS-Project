@@ -1,0 +1,46 @@
+(lp0
+VMannes College The New School for Music
+p1
+aVThe Dwight School
+p2
+aVThe Center School
+p3
+aVBard Graduate Center
+p4
+aVKidville Boutique
+p5
+aVPS 9
+p6
+aVFrank Mc Court High School
+p7
+aVRodeph Sholom School
+p8
+aVTrevor Day School
+p9
+aVGlobal Learning Collaborative
+p10
+aVInnovative Diploma Plus High School
+p11
+aVThe Smith School
+p12
+aVSuccess Academy Upper West
+p13
+aVUrban Assembly School for Green Careers
+p14
+aVSpeyer Legacy School
+p15
+aVGan Eden LLC
+p16
+aVWalden School
+p17
+aVFinger Painted Hands
+p18
+aVWest Eighty Third St Preschool
+p19
+aVThe Big Essay
+p20
+aVWellness In the Schools Inc
+p21
+aVRodeph Sholom School:Pre-Kindergarten
+p22
+a.

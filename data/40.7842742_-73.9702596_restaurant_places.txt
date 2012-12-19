@@ -1,0 +1,84 @@
+(lp0
+VCalle Ocho
+p1
+aVKefi Restaurant
+p2
+aVJackson Hole
+p3
+aVJoe The Art of Coffee
+p4
+aVMomofuku Milk Bar
+p5
+aVBlossom
+p6
+aVBistro Citron
+p7
+aVFirehouse
+p8
+aVTarallucci e Vino
+p9
+aVProhibition
+p10
+aVLenny's
+p11
+aVRay's Pizza
+p12
+aVDitch Plains
+p13
+aVBellini Italian Restaurant & Brick Oven Pizza
+p14
+aVUno Chicago Grill
+p15
+aVNonna
+p16
+aVCilantro
+p17
+aVCotta
+p18
+aVLa Mirabelle Restaurant
+p19
+aVMatsu Inc
+p20
+aVThree Star Coffee Shop
+p21
+aVMomofuku Milk Bar
+p22
+aVPizza Pete's
+p23
+aVSoup Stop
+p24
+aVDunkin' Donuts
+p25
+aVSpring Natural Kitchen
+p26
+aVGastronomie 491
+p27
+aVColumbus Cafe
+p28
+aVMachiavelli
+p29
+aVLite Delights
+p30
+aVFresh Grill Tortilla
+p31
+aVCanteen 82
+p32
+aVParisienne 501 Deli & Grocery
+p33
+aVPrimo Pizza 84
+p34
+aVRestaurant Group
+p35
+aVMain Street
+p36
+aVCasa Pomona
+p37
+aVLa Focaccia
+p38
+aVFivethirteen Columbus LLC
+p39
+aVStarlight Cafe
+p40
+aVCharlie's Sandwich
+p41
+a.

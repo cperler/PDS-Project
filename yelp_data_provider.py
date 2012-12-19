@@ -28,7 +28,10 @@ class YelpDataProvider():
 		for result in results['businesses']:
 			business = YelpBusiness(result, category)
 			businesses.append(business)
-		pickle_it(filename, businesses)
+		try:
+			pickle_it(filename, businesses)
+		except IOError:
+			print('Unable to pickle a Yelp business.')
 		return businesses
 		
 class YelpBusiness():

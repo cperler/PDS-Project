@@ -1,0 +1,12 @@
+(lp0
+VGreat Lawn Softballl Field 1
+p1
+aVArthur Ross Pinetum
+p2
+aVTheodore Roosevelt Park
+p3
+aVMariner's Gate Playground
+p4
+aVTheodore Roosevelt Park
+p5
+a.

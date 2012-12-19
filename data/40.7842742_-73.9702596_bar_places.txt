@@ -1,0 +1,8 @@
+(lp0
+VBlossom
+p1
+aVFirehouse
+p2
+aVProhibition
+p3
+a.
