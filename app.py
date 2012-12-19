@@ -139,7 +139,10 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 				yelp_results = yelp.getReviewsByName(origin, poi, category=category)
 					
 				if len(yelp_results) == 0:
-					print('Unable to find a Yelp business for {} -- skipping.'.format(poi))
+					try:
+						print('Unable to find a Yelp business for {} -- skipping.'.format(poi))
+					except UnicodeEncodeError:
+						print('Unable to parse a Yelp business details.')
 					continue
 				elif len(yelp_results) > 1:
 					print('Too many results retrieved querying Yelp for {} -- skipping.'.format(poi))
@@ -597,6 +600,10 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 			try:
 				prediction = lr.predict(x_current)
 				predictions[trulia_type][lookahead] = {}
+				if (trulia_type == '1 Bedroom Properties' or trulia_type == '2 Bedroom Properties' or trulia_type == '3 Bedroom Properties') and lookahead == 360:
+					print('Prediction for {}..'.format(trulia_type))
+					print('\t{}'.format(int(prediction)))
+					print('\tCoefficients: {}'.format(lr.coef_))
 				predictions[trulia_type][lookahead]['prediction'] = int(prediction)
 				predictions[trulia_type][lookahead]['coefficient'] = lr.coef_
 			except ValueError:
@@ -649,11 +656,19 @@ results = {
 	'predictions' : predictions,
 	'origin' : data['origin'],
 	'zipcode' : data['zipcode'],
-	'dates' : data['dates'],
 	'trulia' : current_prices
 }
 
 if DEBUG:
 	pp = pprint.PrettyPrinter(indent=4)
 	pp.pprint(results)
-pprint.pprint(results, open(directory + '/' + data['origin'] + '_results.txt', 'w+'))
+	
+file = open(directory + '/' + data['origin'] + '_results.pkl', 'w+')
+pickle.dump(results, file)
+file.close()
+
+pprint.pprint(results, open(directory + '/' + data['origin'] + '_results.pp', 'w+'))
+
+file = open(directory + '/' + data['origin'] + '_results.out', 'w+')
+file.write(str(results))
+file.close()

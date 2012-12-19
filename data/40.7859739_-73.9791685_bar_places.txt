@@ -1,0 +1,36 @@
+(lp0
+VThe Gin Mill
+p1
+aVJake's Dilemma
+p2
+aVDublin House
+p3
+aVThe Dead Poet
+p4
+aVStand-Up NY Comedy Club
+p5
+aVThe Parlour
+p6
+aVBlondies
+p7
+aVBourbon Street
+p8
+aVGeorge Keeley
+p9
+aVMcAleer's Pub
+p10
+aVKasbah BBQ & Grill Kosher Restaurant
+p11
+aV(Aged.)
+p12
+aVSoldier McGee Tavern
+p13
+aVTangled Vine
+p14
+aVCava Wine Bar
+p15
+aVSlightly Oliver
+p16
+aVSt james Gate
+p17
+a.

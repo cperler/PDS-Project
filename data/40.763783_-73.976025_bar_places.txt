@@ -1,0 +1,92 @@
+(lp0
+VThe Hilton Club New York
+p1
+aV21 Club
+p2
+aVThe Russian Tea Room
+p3
+aVFour Seasons
+p4
+aVNobu Fifty Seven
+p5
+aVSouth Gate
+p6
+aVMá Pêche
+p7
+aVWhiskey Park
+p8
+aVCentral Park Conservancy
+p9
+aVTrump Grill
+p10
+aVKing Cole Bar
+p11
+aVBenihana
+p12
+aVP.J. Carney's
+p13
+aVOld Castle Pub & Restaurant
+p14
+aVK Lounge
+p15
+aVPapillon Bistro & Bar
+p16
+aVHeartland Brewery
+p17
+aVThe Carnegie Club
+p18
+aVSalon de Ning
+p19
+aVred 58
+p20
+aVOak Room
+p21
+aVCore Club
+p22
+aVObikà - New York
+p23
+aVConnolly's Pub & Restaurant
+p24
+aVCafe Classico
+p25
+aVKnave at Le Parker Meridien
+p26
+aVRose Club
+p27
+aVFP Patisserie
+p28
+aVEmpire Steakhouse
+p29
+aVWhiskey Trader
+p30
+aVTwo E
+p31
+aVNew York Thai Grill-Sushi Bar
+p32
+aVSuite 55 Restaurant and Hookah Lounge
+p33
+aVCassidys Pub
+p34
+aVThe Champagne Bar at The Plaza
+p35
+aVStar Lounge
+p36
+aVGotham Lounge at The Peninsula
+p37
+aVRandolph's Lounge
+p38
+aVHarry's New York Bar
+p39
+aVLaurelton Diamonds Inc
+p40
+aVThe Bar
+p41
+aV2E At the Pierre
+p42
+aVPark Red Bar & Grill
+p43
+aVFour Seasons Hotel Bar
+p44
+aVShoreham Bar
+p45
+a.

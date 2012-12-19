@@ -1,0 +1,402 @@
+(lp0
+VThe Hilton Club New York
+p1
+aV21 Club
+p2
+aVThe Russian Tea Room
+p3
+aVMetropolitan Club
+p4
+aV53rd and 6th
+p5
+aVLe Parker Meridien
+p6
+aVFriars National Association Inc
+p7
+aVBurger Joint
+p8
+aVThe Modern
+p9
+aVNorma's
+p10
+aVPop Burger
+p11
+aVTao
+p12
+aVArmani Ristorante
+p13
+aVMonkey Bar
+p14
+aVCafe 2
+p15
+aVPetrossian
+p16
+aVNobu Fifty Seven
+p17
+aVGordon Ramsay at The London
+p18
+aVSouth Gate
+p19
+aVMangia
+p20
+aVFive Guys Burgers and Fries
+p21
+aVMilos, Estiatorio
+p22
+aVMá Pêche
+p23
+aVRue 57
+p24
+aVLa Bonne Soupe
+p25
+aVBenoit
+p26
+aVBrasserie 8½
+p27
+aVUncle Jack's Steakhouse
+p28
+aVFika
+p29
+aVBeacon
+p30
+aVTrattoria Dell'Arte
+p31
+aVRadiance Tea House & Books
+p32
+aVTOPAZ Thai Restaurant
+p33
+aVBice
+p34
+aVBurger Heaven
+p35
+aVQuality Meats
+p36
+aVAquavit
+p37
+aVWhiskey Park
+p38
+aVSeäsonal
+p39
+aVChina Grill
+p40
+aVThe Plaza Food Hall
+p41
+aVTrump Grill
+p42
+aVThe Palm Court
+p43
+aVBottega del Vino
+p44
+aVMcCormick & Schmick's
+p45
+aVKatsu-Hama
+p46
+aVEuropa Cafe
+p47
+aVREMI
+p48
+aVSubway
+p49
+aVKing Cole Bar
+p50
+aVAbboccato
+p51
+aVIl Gattopardo
+p52
+aVSubway
+p53
+aVBenihana
+p54
+aVLavo
+p55
+aVP.J. Carney's
+p56
+aVSubway
+p57
+aVThe Garden
+p58
+aVJoe's Shanghai
+p59
+aVRestaurant Associates
+p60
+aVUpstairs At 21
+p61
+aVDig Inn Seasonal Market
+p62
+aVAu Bon Pain
+p63
+aVSarabeth's Central Park South
+p64
+aVFresh & Co
+p65
+aVCosi
+p66
+aVRouge Tomate
+p67
+aVLe Pain Quotidien
+p68
+aVOyster Bar at the Plaza
+p69
+aVLa Petite Maison
+p70
+aVOld Castle Pub & Restaurant
+p71
+aVBistro Milano
+p72
+aVSolo
+p73
+aVCaviar Russe
+p74
+aVAngelo's Pizzeria
+p75
+aV120 West 58th Street
+p76
+aVNino's Tuscany Steakhouse
+p77
+aVRedeye Grill
+p78
+aVAstro Restaurant
+p79
+aVIse
+p80
+aVBombay Palace
+p81
+aVPapillon Bistro & Bar
+p82
+aVMichael's New York
+p83
+aVStarbucks
+p84
+aVMacaron Cafe
+p85
+aVBlue Dog Cafe
+p86
+aVHeartland Brewery
+p87
+aVBella Vita Pizzeria
+p88
+aVTed's Montana Grill
+p89
+aVPazza Notte
+p90
+aVMolyvos
+p91
+aVHarry Cipriani
+p92
+aVCirco
+p93
+aVLe Pain Quotidien
+p94
+aVSoba Nippon
+p95
+aVCerte
+p96
+aVFives at The Peninsula
+p97
+aVSalon de Ning
+p98
+aVAstor Court
+p99
+aVChom Chom NYC
+p100
+aVPret A Manger
+p101
+aVred 58
+p102
+aVTang Pavilion
+p103
+aVOak Room
+p104
+aVRothmann's Steakhouse
+p105
+aVEarl of Sandwich
+p106
+aVObikà - New York
+p107
+aVDigby's Cafe
+p108
+aVConnolly's Pub & Restaurant
+p109
+aVCafe Classico
+p110
+aVStarbucks
+p111
+aVLili's Noodle Shop & Grill
+p112
+aVChop't Creative Salad
+p113
+aVMurals on 54
+p114
+aVStarbucks
+p115
+aVGreat American Health Bar
+p116
+aVKnave at Le Parker Meridien
+p117
+aVTeleon Cafe
+p118
+aVIl Tinello Ristorante
+p119
+aVSerafina Osteria
+p120
+aVIl Corso Restaurant
+p121
+aVKiku Japanese Restaurant Inc
+p122
+aVSushiya
+p123
+aVBread Market Café
+p124
+aVPizzArte
+p125
+aVRose Club
+p126
+aVEmpire Steakhouse
+p127
+aVAngela Rock N Roll Deli
+p128
+aVGoodman's Cafe
+p129
+aVZibetto
+p130
+aVVia Quadronno Cafe
+p131
+aVCafe Metro
+p132
+aVSubway
+p133
+aVFrederick's
+p134
+aVSan Pietro
+p135
+aV53rd Street Gourmet Deli Inc
+p136
+aVNew York Thai Grill-Sushi Bar
+p137
+aVBrasserie Pushkin
+p138
+aVSuite 55 Restaurant and Hookah Lounge
+p139
+aVBistro New York
+p140
+aVPaper Moon Milano
+p141
+aVStarbucks
+p142
+aVCassidys Pub
+p143
+aVChipotle Mexican Grill
+p144
+aVThe Champagne Bar at The Plaza
+p145
+aVTuscany
+p146
+aVSixth Avenue Cafe
+p147
+aVPrinton 56
+p148
+aVLindt Chocolate Shop
+p149
+aVAll About Food
+p150
+aVStar Lounge
+p151
+aVBay Leaf Indian Brasserie
+p152
+aVTina's Restaurant
+p153
+aVGotham Lounge at The Peninsula
+p154
+aVPizza Villagio Cafe
+p155
+aVFifth Avenue Thai Spa
+p156
+aVGreen Cafe
+p157
+aVYips
+p158
+aVRandolph's Lounge
+p159
+aVCity Market Cafe Inc
+p160
+aVGreen Cafe
+p161
+aVRaga Indian Restaurant
+p162
+aVLa Parisienne Coffee House
+p163
+aVSmilers Delicatessens Stores
+p164
+aV106 W 57 Street Associates LLC
+p165
+aVMadrit's Italian Ristorante
+p166
+aVTeresa's Gourmet Cafe
+p167
+aVBar 5F
+p168
+aVQ56 Restaurant & Cocktails
+p169
+aV745 Cafe
+p170
+aVNew York Marketplace
+p171
+aVPark Room
+p172
+aVD & S Market Place
+p173
+aVStage Star Deli
+p174
+aVChef's Kitchen
+p175
+aVRoy Bean
+p176
+aVSUBMARINA CALIFORNIA SUBS
+p177
+aVKiroihana Japanese Restaurant
+p178
+aVSitar Indian Cuisine
+p179
+aVCity Fifty Five
+p180
+aVThe Plaza Retail Collection
+p181
+aV56 Manhattan Gourmet
+p182
+aVAlain Ducasse Ny Inc
+p183
+aVBistro
+p184
+aVA La Mode Oriental
+p185
+aVBeef Steak Charlies
+p186
+aVDig Inn
+p187
+aVDelarte
+p188
+aVSushi Shop
+p189
+aVRus Fast Foods
+p190
+aVVago
+p191
+aVJennifers Restaurant
+p192
+aVPlaza Cafe
+p193
+aVTY Lounge
+p194
+aVPalette Restaurant Wine Bar
+p195
+aVCellini Restaurant
+p196
+aVLuke's Lobster
+p197
+aVSchupak Group Inc
+p198
+aVMacchiato II
+p199
+aVKuraoka & Co Inc
+p200
+a.

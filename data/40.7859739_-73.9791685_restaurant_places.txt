@@ -1,0 +1,230 @@
+(lp0
+VCafe Lalo
+p1
+aVGood Enough To Eat
+p2
+aVSarabeth's West
+p3
+aVBarney Greengrass
+p4
+aVBig Nick's Burger Joint & Pizza Joint
+p5
+aVBrother Jimmy's BBQ
+p6
+aVHaru
+p7
+aVHi Life Bar & Grill
+p8
+aVThe Gin Mill
+p9
+aVOuest
+p10
+aVPeacefood Cafe
+p11
+aVFlor de Mayo
+p12
+aVLand
+p13
+aVDublin House
+p14
+aVThe Parlour
+p15
+aVBlondies
+p16
+aVFred's
+p17
+aVMermaid Inn
+p18
+aVBagels & Co.
+p19
+aVPopover Cafe
+p20
+aVB. Café
+p21
+aVGeorge Keeley
+p22
+aVNice Matin
+p23
+aVArtie's Delicatessen
+p24
+aVFrench Roast
+p25
+aVRecipe
+p26
+aVMcAleer's Pub
+p27
+aVKasbah BBQ & Grill Kosher Restaurant
+p28
+aVMomoya
+p29
+aVTolani Wine Restaurant
+p30
+aVCafe Con Leche
+p31
+aV5 Napkin Burger
+p32
+aVLa Caridad 78
+p33
+aVSwagat Indian Restaurant
+p34
+aVCoppola's
+p35
+aVZabar's Cafe
+p36
+aVT AND R PIZZA
+p37
+aV(Aged.)
+p38
+aVThe Sunburnt Calf
+p39
+aVLuke's Lobster
+p40
+aVDitch Plains
+p41
+aVSol Y Sombra
+p42
+aVSoldier McGee Tavern
+p43
+aVUno Chicago Grill
+p44
+aVHampton Chutney Co.
+p45
+aVSaravana Bhavan
+p46
+aVTangled Vine
+p47
+aVPrime KO
+p48
+aVMcDonald's
+p49
+aVOzu Restaurant
+p50
+aVLe Pain Quotidien
+p51
+aVCeasar's Palace Pizza
+p52
+aVHale & Hearty
+p53
+aVEstihana
+p54
+aVFishTag
+p55
+aVBettola
+p56
+aVPlanet Sushi
+p57
+aVSpiga
+p58
+aVCeleste
+p59
+aVEmack & Bolio's Ice Cream
+p60
+aVMonaco
+p61
+aVDean's Restaurant & Pizzeria
+p62
+aVVai Restaurant
+p63
+aVCafe 82
+p64
+aVCava Wine Bar
+p65
+aVBlossom
+p66
+aVJacob's Pickles
+p67
+aVSpice
+p68
+aVAlachi Masala Indian Restaurant
+p69
+aVHarriet's Kitchen
+p70
+aVIsland Burgers & Shakes
+p71
+aVEuropan
+p72
+aVAndy's Deli
+p73
+aVRoppongi Restaurant
+p74
+aVGreen Leaf Deli
+p75
+aVThe Great Burrito
+p76
+aVKitaro Sushi Inc
+p77
+aVDunkin' Donuts
+p78
+aVAmsterdam Diner
+p79
+aVPizza By La Grolla
+p80
+aVIndian Tanpura
+p81
+aVHomer's World Famous Malt Shop
+p82
+aVAl Dente
+p83
+aVSt james Gate
+p84
+aVCafe on Broadway
+p85
+aVRay's Pizza
+p86
+aVAli Baba of West Side
+p87
+aVWilson's
+p88
+aVSerafina
+p89
+aVSilk Road Palace
+p90
+aVWorld Coffee
+p91
+aVHummus Kitchen
+p92
+aVNew Wave Cafe
+p93
+aVAmsterdam Deli
+p94
+aVCafe Deux Margot
+p95
+aVKing Food Restaurant Inc
+p96
+aVPizza Joint
+p97
+aVSay Cheese
+p98
+aVMain Street
+p99
+aVBobby's Brick Oven
+p100
+aVKing Food Chen
+p101
+aVThai Nam
+p102
+aVUncle Louie G
+p103
+aVPandit
+p104
+aVAmsterdam Gourmet Shop Inc
+p105
+aVDeep Sea Subs
+p106
+aVDaikichi Sushi
+p107
+aVWine 4 Ever
+p108
+aVRepublic of Beans
+p109
+aVNuu Resolution
+p110
+aVCulinary Historians-New York
+p111
+aVCharlie's Sandwich
+p112
+aVBarbara Irene Cafe Inc
+p113
+aVHey Mambo
+p114
+a.
