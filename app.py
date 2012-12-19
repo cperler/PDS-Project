@@ -16,6 +16,8 @@ import sys
 from keys import *
 import pprint
 from sklearn import linear_model, cross_validation, tree
+from crime_reports_by_zip import *
+from Noise_complaints_by_zip import *
 
 DEBUG = True
 yelp = YelpDataProvider(YELP_KEY)
@@ -109,6 +111,8 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 	lat, lon = get_lat_lon(origin)
 	points_of_interest = get_places(lat, lon, poi_categories)
 	zipcode = get_zipcode(origin)
+	crime_stat_for_zipcode = get_crime_stats(zipcode)
+	noise_stat_for_zipcode = get_noise_stats(zipcode)
 
 	valid_businesses = []
 	for category in poi_categories:
@@ -141,6 +145,8 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 	result = {	
 				'poi' : valid_businesses, 
 				'landmark_frequencies' : landmark_frequencies,
+				'crime_stat' : crime_stat_for_zipcode,
+				'noise_stat' : noise_stat_for_zipcode,
 				'real_estate' : trulia_data, 
 				'origin' : origin, 
 				'zipcode' : zipcode,
@@ -420,14 +426,12 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 	#graph_category_reviews_vs_real_estate_prices()
 	return business_by_category
 
-def analyze_data(business_by_category, poi_data, real_estate_data, landmark_frequencies, origin, zipcode, yelp_dates, trulia_dates):
+def analyze_data(business_by_category, poi_data, real_estate_data, landmark_frequencies, crime_stat, noise_stat, origin, zipcode, yelp_dates, trulia_dates):
 	yelp_x, yelp_y = [], []	
 	yelp_data = {}
 	category_idx = 0
 	max_yelp_dt = 0
 	for category in business_by_category:
-		if category != 'restaurant':
-			continue
 		dates = []
 		ratings = {}
 		for business in business_by_category[category]:
@@ -570,10 +574,12 @@ if DEBUG:
 	data = pickle_load('datums')
 else:
 	data = collect_data(address, poi_categories, yelp_start_dt, yelp_end_dt, trulia_start_dt, trulia_end_dt)
+	pickle_it('datums', data)
 
 if DEBUG:
 	business_by_category = pickle_load('business_by_category')
 else:
 	business_by_category = graph_data(data['poi'], data['real_estate'], data['landmark_frequencies'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
+	pickle_it('business_by_category', business_by_category)
 
-analyze_data(business_by_category, data['poi'], data['real_estate'], data['landmark_frequencies'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
+analyze_data(business_by_category, data['poi'], data['real_estate'], data['landmark_frequencies'], data['crime_stat'], data['noise_stat'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
