@@ -27,9 +27,9 @@ yelp = YelpDataProvider(YELP_KEY)
 trulia = TruliaDataProvider(TRULIA_KEY)
 gmaps = GoogleMaps(GOOGLE_KEY)
 
-roi = 700
+roi = 400
 non_categorical_categories = ['school', 'police', 'park', 'subway_station']
-poi_categories = ['restaurant', 'school', 'police', 'park', 'bar', 'subway_station']
+poi_categories = ['restaurant', 'school', 'police', 'park', 'bar', 'subway_station', 'supermarket', 'pharmacy']
 
 address = raw_input('Enter a street address: ')
 if address == None or address == '':
