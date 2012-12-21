@@ -6,6 +6,13 @@ from datetime import datetime
 YELP_KEY = keys.YELP_KEY
 
 class YelpDataProvider():	
+	'''
+	A wrapper around the Yelp python plugin, which itself is a helper utility for accessing the Yelp API.
+	
+	This provider can return a set of YelpBusiness instances, each of which contains data pulled from both the Yelp API and
+	scraped from the web, including paginated reviews.  Each YelpBusiness has a list of YelpReviews, each of which represents
+	a single scraped review.
+	'''
 	def __init__(self, APIKEY):
 		self.APIKEY = APIKEY
 		

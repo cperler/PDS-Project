@@ -20,27 +20,36 @@ from sklearn import linear_model, cross_validation, tree
 from crime_reports_by_zip import *
 from Noise_complaints_by_zip import *
 
-DEBUG = False
-SAVE_PLOTS = True
+DEBUG = False			# when True, prints out extra logging and loads results from cached files
+SAVE_PLOTS = True		# when True, saves plots to files rather than loads them
 
-yelp = YelpDataProvider(YELP_KEY)
-trulia = TruliaDataProvider(TRULIA_KEY)
-gmaps = GoogleMaps(GOOGLE_KEY)
+yelp = YelpDataProvider(YELP_KEY)			# handles calls to Yelp
+trulia = TruliaDataProvider(TRULIA_KEY)		# handles calls to Trulia
+gmaps = GoogleMaps(GOOGLE_KEY)				# handles calls to Google
 
-roi = 400
+roi = 400		# radius of interest in meters
+
+# features to store as binary fields:
 non_categorical_categories = ['school', 'police', 'park', 'subway_station']
+
+# all features:
 poi_categories = ['restaurant', 'school', 'police', 'park', 'bar', 'subway_station', 'supermarket', 'pharmacy']
 
+# prompt for a street address:
 address = raw_input('Enter a street address: ')
 if address == None or address == '':
 	print('Invalid street address, using default: 1350 Avenue of the Americas, NYC, NY')
 	address = '1350 Avenue of the Americas, NYC, NY'
-	
+
+# location to store results and images:
 directory = '.\\' + address.replace(',', '').replace(' ', '_')
 if not os.path.exists(directory):
     os.makedirs(directory)
 
 def show_or_save_plot(plot, title):
+	'''
+	Helper method to save plot images or show them.
+	'''
 	if SAVE_PLOTS:		
 		savefig(directory + '/' + title + '.png')
 		plot.close()
@@ -48,6 +57,10 @@ def show_or_save_plot(plot, title):
 		plot.show()
 
 def get_places(lat, long, poi_categories, radius_of_interest=roi, api_key = GOOGLE_KEY):
+	'''
+	Given a latitude and longitude, a set of point-of-interest categories, and a radius of interest, retrieve a list of 
+	places from Google - such as business names.
+	'''
 	place_name_dict={}
 	for type in poi_categories:
 		filename = '{}_{}_{}_places.txt'.format(lat, long, type)
@@ -94,10 +107,16 @@ def get_places(lat, long, poi_categories, radius_of_interest=roi, api_key = GOOG
 	return place_name_dict
 
 def get_lat_lon(location):
+	'''
+	Get the latitiude and longitude from Google for a specified location.
+	'''
 	lat, lon = gmaps.address_to_latlng(location)
 	return (lat, lon)
 	
 def in_range(origin, test_location, acceptable_distance):
+	'''
+	Given two locations, and an acceptable distance, return True if the two locations are within an acceptable distance of each other.
+	'''
 	formatted_origin = origin.replace(',', '').replace('&', '').replace(' ', '+').replace('++', '+')
 	formatted_test = test_location.replace(',', '').replace('&', '').replace(' ', '+').replace('++', '+')
 	url = 'http://maps.googleapis.com/maps/api/distancematrix/json?origins=%s&destinations=%s&sensor=false' % (formatted_origin, formatted_test)
@@ -117,25 +136,33 @@ def in_range(origin, test_location, acceptable_distance):
 		return True
 
 def get_zipcode(address):
+	'''
+	Gets the zipcode for a given address via Google's API.
+	'''
 	normalized_address = gmaps.geocode(address)
 	placemark = normalized_address['Placemark'][0]
 	return placemark['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['Locality']['DependentLocality']['PostalCode']['PostalCodeNumber']
 
 def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_start_dt, trulia_end_dt):
-	# 1. get list of businesses within area
-	# 2. get zipcode for origin
-	# 3. for each business, download yelp data - only load if business zip matches origin zip
-	# 4. get trulia data for zipcode
+	'''
+	1. gets a list of businesses within area of the origin for the specified point of interest categories
+	2. gets zipcode for origin
+	3. for each business, downloads yelp data - only loads business data if the business zipcode matches the origin zipcode
+		-this check is to prevent naming confusion between Google and Yelp
+		-filters review given the specified date range
+	4. get trulia data for the specified zipcode and date date range
+	'''
 	lat, lon = get_lat_lon(origin)
 	points_of_interest = get_places(lat, lon, poi_categories)
 	zipcode = get_zipcode(origin)
-	crime_stat_for_zipcode = get_crime_stats(zipcode)
-	noise_stat_for_zipcode = get_noise_stats(zipcode)
+	crime_stat_for_zipcode = get_crime_stats(zipcode)			# retrieve crime stat ranking from NYC Open Data (pre-downloaded)
+	noise_stat_for_zipcode = get_noise_stats(zipcode)			# retrieve noise stat ranking from NYC Open Date (pre-downloaded)
 
 	valid_businesses = []
 	for category in poi_categories:
 		if category in points_of_interest and category not in non_categorical_categories:
 			for poi in points_of_interest[category]:
+				# Get data from Yelp:
 				yelp_results = yelp.getReviewsByName(origin, poi, category=category)
 					
 				if len(yelp_results) == 0:
@@ -149,29 +176,30 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 					continue
 				
 				business = yelp_results[0]
-				business.filter_reviews_by_date(yelp_start_dt, yelp_end_dt)
+				business.filter_reviews_by_date(yelp_start_dt, yelp_end_dt)	# only include those reviews within our date range of interest
 				
-				if in_range(origin, business.get_address(), roi):
+				# confirms that the business Yelp provided (given the name came from Google) is within range:
+				if in_range(origin, business.get_address(), roi):			
 					valid_businesses.append(business)
 	
 	landmark_frequencies = {}
 	for category in non_categorical_categories:
-		landmark_frequencies[category] = points_of_interest[category]
-		
+		landmark_frequencies[category] = points_of_interest[category]		
 	print('Collected data from yelp.')
-		
+	
+	# Get data from Trulia:
 	trulia_data = trulia.parse_listings(trulia.get_trulia_data_for_date_range_and_zipcode(trulia_start_dt, trulia_end_dt, zipcode))
 	print('Collected data from trulia.')
 	
 	result = {	
-				'poi' : valid_businesses, 
-				'landmark_frequencies' : landmark_frequencies,
-				'crime_stat' : crime_stat_for_zipcode,
-				'noise_stat' : noise_stat_for_zipcode,
-				'real_estate' : trulia_data, 
-				'origin' : origin, 
-				'zipcode' : zipcode,
-				'dates' : {
+				'poi' : valid_businesses, 											# list of valid businesses (YelpBusiness)
+				'landmark_frequencies' : landmark_frequencies,						# binary data for certain features (1 = present)
+				'crime_stat' : crime_stat_for_zipcode,								# crime statistic ranking
+				'noise_stat' : noise_stat_for_zipcode,								# noise statistic ranking
+				'real_estate' : trulia_data, 										# Trulia listing data
+				'origin' : origin, 													# starting location address
+				'zipcode' : zipcode,												# zipcode for origin
+				'dates' : {															# date ranges used for Yelp and Trulia
 					'yelp' : {'start' : yelp_start_dt, 'end' : yelp_end_dt},
 					'trulia' : {'start' : trulia_start_dt, 'end' : trulia_end_dt}
 				}
@@ -180,6 +208,9 @@ def collect_data(origin, poi_categories, yelp_start_dt, yelp_end_dt, trulia_star
 	return result
 
 def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode, yelp_dates, trulia_dates):
+	'''
+	Generates a whole ton of graphs - nested methods with no comments should be self-explanatory from the method name.
+	'''
 	business_by_category = {}
 	for business in poi_data:
 		if business.category not in business_by_category:
@@ -187,6 +218,9 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 		business_by_category[business.category].append(business)
 	
 	def plot_data_with_dates(x_list, y_list, x_label, y_label, format, label_list, title, include_trend=True):
+		'''
+		Helper function for charting multiple series of data with a date-based X axis.
+		'''
 		if len(y_list) != len(label_list):
 			raise Exception('# of series to plot does not match # of labels for legend.')
 		
@@ -209,6 +243,9 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 		return plt
 	
 	def plot_histogram(data, bins, x_label, y_label, title):
+		'''
+		Helper function for charting a histogram.
+		'''
 		plt.figure(figsize=(6*3.13,4*3.13))
 		plt.hist(data, bins=bins)
 		plt.xlabel(x_label)
@@ -443,6 +480,7 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 	graph_business_reviews_by_category_over_time()
 	graph_category_reviews_over_time()
 	graph_category_pricing_histogram()
+	
 	try:
 		graph_properties_over_time()
 		graph_category_reviews_vs_real_estate_prices()
@@ -451,14 +489,27 @@ def graph_data(poi_data, real_estate_data, landmark_frequencies, origin, zipcode
 	return business_by_category
 
 def analyze_data(business_by_category, poi_data, real_estate_data, landmark_frequencies, crime_stat, noise_stat, origin, zipcode, yelp_dates, trulia_dates):
+	'''
+	The Data Science portion of this project.
+	
+	This method first takes all of the data, and builds up a large matrix.  Data from disparate sets is joined on date.
+	
+	When there is no review for a date for a given category, reviews are carried forward or backward.  For example, if yesterday's
+	restaurant ranking was 4 and today's there's no discrete ranking, we keep the 4 for today as well.
+	
+	The method then runs the data through a LinearRegression, and graphs accuracies for different lookahead period and target percentages.
+	Lastly, the graph returns predictions based on the model, for different combinations of input data and lookahead values.
+	'''
 	predictions = {}
 	yelp_x, yelp_y = [], []	
 	yelp_data = {}
 	category_idx = 0
 	max_yelp_dt = 0
+	
+	# Add Yelp data into the main matrix:
 	for category in business_by_category:
 		dates = []
-		ratings = {}
+		ratings = {}		
 		for business in business_by_category[category]:
 			for review in business.reviews:
 				pub_date = mdates.date2num(review.pub_date)
@@ -477,6 +528,7 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 	
 		dates.sort()
 
+		# Convert the sparse matrix into a fully populated matrix (using 0 for empty cells):
 		for dt in dates:
 			if dt not in yelp_data:
 				yelp_data[dt] = []
@@ -488,6 +540,7 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 			while len(yelp_data[dt]) <= category_idx:
 				yelp_data[dt].append(0)
 
+		# Swap 0-value cells for non-0-value cells by carrying rankings forward:
 		idx = 0
 		while idx <= category_idx:			
 			last_val = 0
@@ -499,7 +552,8 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 			idx += 1			
 
 		dates.reverse()
-			
+		
+		# If there are still 0-value cells, carry rankings backwards to fill those cells:
 		idx = 0
 		while idx <= category_idx:			
 			last_val = 0
@@ -523,6 +577,10 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 			all_types.append(type)
 
 	def find_trulia_data(trulia_data, start_date, days_out):
+	'''
+	Helper method for finding trulia data relevant for a given date.  Trulia data is maintained on a weekly basis,
+	so given an intra-week date, we need to iterate to find the relevant data.
+	'''
 		target_dt = start_date + days_out
 		for k, v in trulia_data:
 			if k >= target_dt:
@@ -530,6 +588,8 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 		return (None, None)
 			
 	for trulia_type in all_types:
+	
+		# Add Trulia data to the main matrix:
 		for listing in real_estate_data:
 			type = listing.type
 			if type == trulia_type:
@@ -554,7 +614,11 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 		
 		lookahead_x = []
 		accuracy_y = []
-		lookaheads = range(0, 390, 30)
+		
+		# Represents how far ahead into the future the model is trained.
+		# For example, are we trying to predict prices 1 week ahead, or 1 year ahead?
+		lookaheads = range(0, 390, 30)		
+		
 		targets = [float(target) / 100.0 for target in range(5, 100, 5)]
 		trained_accuracy_y = []
 		x_current = []
@@ -577,9 +641,9 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 					# x.append([(int(yelp_x) - max_yelp_dt)] + [trulia_y] + [crime_stat] + [noise_stat] + [v for k, v in landmark_frequencies.items()])
 					# y.append(sum(yelp_y) / len(yelp_y))
 			
+			# Build the model and do cross validation:
 			x = np.array(x)
-			y = np.array(y)
-			
+			y = np.array(y)			
 			lr = linear_model.LinearRegression()			
 			lr_scores = cross_validation.cross_val_score(lr, x, y, cv=10)
 			
@@ -592,12 +656,17 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 			
 			training_accuracy_for_target = []
 			for target in targets:
+				# Split the data set based on various targets:
 				x_train, x_test, y_train, y_test = cross_validation.train_test_split(x, y, test_size=target, random_state=0)
-				lr = lr.fit(x_train, y_train)
+				
+				# Fit and score the model:
+				lr = lr.fit(x_train, y_train)				
 				lr_score = lr.score(x_test, y_test)
+						
 				training_accuracy_for_target.append(lr_score)
 			trained_accuracy_y.append(training_accuracy_for_target)
 			
+			# Generate predictions from the model using the most recent data:
 			if trulia_type not in predictions:
 				predictions[trulia_type] = {}
 			try:
@@ -612,6 +681,7 @@ def analyze_data(business_by_category, poi_data, real_estate_data, landmark_freq
 			except ValueError:
 				predictions[trulia_type][lookahead] = -1
 			
+		# Generate pretty graphs:
 		plt.plot(lookahead_x, accuracy_y)
 		graph_title = 'Linear Regression Mean Using {}'.format(trulia_type)
 		plt.title(graph_title)
@@ -648,6 +718,7 @@ else:
 
 predictions = analyze_data(business_by_category, data['poi'], data['real_estate'], data['landmark_frequencies'], data['crime_stat'], data['noise_stat'], data['origin'], data['zipcode'], data['dates']['yelp'], data['dates']['trulia'])
 
+# Retrieve current real estate price from Trulia:
 current_prices = {}
 current_listing_info = trulia.parse_listings(trulia.get_trulia_data_for_date_range_and_zipcode(trulia_end_dt_minus_1_week, trulia_end_dt, data['zipcode']))
 for listing in current_listing_info:
@@ -655,6 +726,7 @@ for listing in current_listing_info:
 	avgListing = listing.avgListing
 	current_prices[type] = avgListing
 
+# Our results shows the predictions and the current price listings (basis for comparison):
 results = {
 	'predictions' : predictions,
 	'origin' : data['origin'],

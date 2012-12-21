@@ -9,6 +9,10 @@ from datetime import datetime
 TRULIA_KEY = keys.TRULIA_KEY
 
 class TruliaDataProvider:
+	'''
+	A wrapper around the Trulia API - provides helper methods for download data given various 
+	input parameters that specify location and date range.
+	'''
 	TRULIA_API = 'http://api.trulia.com/webservices.php?{}'
 	
 	def __init__(self, APIKEY):
